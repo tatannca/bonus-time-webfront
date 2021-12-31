@@ -9,7 +9,7 @@ const SingUp: NextPage = () => {
   const pageBack = () => router.back()
   const apiTest = () => {
     axios
-      .get('http://localhost:8080/')
+      .get('http://localhost:8080/api/v1/public')
       .then((res) => {
         console.log(res.data)
       })
