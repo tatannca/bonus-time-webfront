@@ -29,7 +29,6 @@ const Home: NextPage = () => {
           <NextLink href="/signup" passHref>
             <Link color="teal.500">こちら</Link>
           </NextLink>
-          から
         </Text>
       </Box>
     </Center>
