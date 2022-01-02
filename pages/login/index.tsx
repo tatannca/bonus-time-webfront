@@ -1,35 +1,40 @@
-import type { NextPage } from 'next'
-import { useRouter } from 'next/router'
-import axios from 'axios'
-import { Container, VStack, Input, InputGroup, Button, IconButton, InputRightElement, Heading } from '@chakra-ui/react'
-import { ChevronLeftIcon } from '@chakra-ui/icons'
-import { signInWithEmailAndPassword } from 'firebase/auth'
-import { firebaseAuth } from '../../firebase/config'
-import { useState } from 'react'
+import type { NextPage } from 'next';
+import { useRouter } from 'next/router';
+import axios from 'axios';
+import { Container, VStack, Input, InputGroup, Button, IconButton, InputRightElement, Heading } from '@chakra-ui/react';
+import { ChevronLeftIcon } from '@chakra-ui/icons';
+import { requestSignIn } from '../../store/auth';
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { firebaseAuth } from '../../firebase/config';
+import { useState } from 'react';
+import { useAppDispatch } from '../../store/hooks';
 
 const SingUp: NextPage = () => {
-  const router = useRouter()
-  const pageBack = () => router.back()
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [showPass, setShowPass] = useState(false)
+  const dispatch = useAppDispatch();
+  const router = useRouter();
+  const pageBack = () => router.back();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPass, setShowPass] = useState(false);
 
   const login = () => {
-    signInWithEmailAndPassword(firebaseAuth, email, password)
-      .then(async (res) => {
-        const user = res.user
-        const token = await user.getIdToken()
-        localStorage.setItem('access_token', token)
-        console.log('user', user)
-        console.log('token', token)
-        router.push('/dashboard')
-      })
-      .catch((err) => {
-        const errorCode = err.code
-        const errorMessage = err.message
-        console.log(errorCode, errorMessage)
-      })
-  }
+    dispatch(requestSignIn({ firebaseAuth, email, password }));
+    console.log('login');
+    // signInWithEmailAndPassword(firebaseAuth, email, password)
+    //   .then(async (res) => {
+    //     const user = res.user;
+    //     const token = await user.getIdToken();
+    //     localStorage.setItem('access_token', token);
+    //     console.log('user', user);
+    //     console.log('token', token);
+    //     router.push('/dashboard');
+    //   })
+    //   .catch((err) => {
+    //     const errorCode = err.code;
+    //     const errorMessage = err.message;
+    //     console.log(errorCode, errorMessage);
+    //   });
+  };
 
   // const apiTest = () => {
   //   axios
@@ -68,6 +73,6 @@ const SingUp: NextPage = () => {
         </Button>
       </VStack>
     </Container>
-  )
-}
-export default SingUp
+  );
+};
+export default SingUp;
