@@ -13,7 +13,6 @@ const SingUp: NextPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPass, setShowPass] = useState(false);
-  const [user, setUser] = useState<User | null>();
 
   const signUp = () => {
     createUserWithEmailAndPassword(firebaseAuth, email, password)
@@ -28,9 +27,10 @@ const SingUp: NextPage = () => {
       });
   };
 
+  // TODO: hookに切り出す
+  const [user, setUser] = useState<User | null | undefined>(undefined);
   useEffect(() => {
     firebaseAuth.onAuthStateChanged((user) => {
-      if (user) router.push('/settings');
       setUser(user);
     });
   }, [router]);
@@ -46,7 +46,9 @@ const SingUp: NextPage = () => {
   //     })
   // }
 
-  if (user) return <div>Loading...</div>;
+  if (user === undefined) return <div>Loading...</div>;
+
+  if (user) return <div>すでに登録しています</div>;
 
   return (
     <Container>

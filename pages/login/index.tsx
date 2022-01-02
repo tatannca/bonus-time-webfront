@@ -5,8 +5,9 @@ import { Container, VStack, Input, InputGroup, Button, IconButton, InputRightEle
 import { ChevronLeftIcon } from '@chakra-ui/icons';
 import { requestSignIn } from '../../store/auth';
 import { firebaseAuth } from '../../firebase/config';
-import { useState } from 'react';
-import { useAppDispatch } from '../../store/hooks';
+import { useEffect, useState } from 'react';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { User } from 'firebase/auth';
 
 const SingUp: NextPage = () => {
   const dispatch = useAppDispatch();
@@ -15,10 +16,24 @@ const SingUp: NextPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPass, setShowPass] = useState(false);
+  const authState = useAppSelector((state) => state.auth);
+
+  // TODO: hookに切り出す
+  const [user, setUser] = useState<User | null | undefined>(undefined);
+  useEffect(() => {
+    const unsubscribe = firebaseAuth.onAuthStateChanged((user) => {
+      setUser(user);
+      if (user) router.replace('/dashboard');
+    });
+    return () => unsubscribe();
+  }, [router, user]);
 
   const login = async () => {
     await dispatch(requestSignIn({ firebaseAuth, email, password }));
-    router.push('/dashboard');
+    firebaseAuth.onAuthStateChanged((user) => {
+      if (user) router.replace('/dashboard');
+      setUser(user);
+    });
   };
 
   // const apiTest = () => {
@@ -31,6 +46,8 @@ const SingUp: NextPage = () => {
   //       console.log(err)
   //     })
   // }
+
+  if (user || user === undefined) return <div>Loading...</div>;
 
   return (
     <Container>
@@ -53,7 +70,7 @@ const SingUp: NextPage = () => {
             </InputRightElement>
           </InputGroup>
         </VStack>
-        <Button colorScheme="teal" onClick={login}>
+        <Button colorScheme="teal" onClick={login} isLoading={authState.isLoading}>
           ログイン
         </Button>
       </VStack>

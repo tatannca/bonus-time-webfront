@@ -4,7 +4,13 @@ import authReducer from './auth';
 export const store = configureStore({
   reducer: {
     auth: authReducer
-  }
+  },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: {
+        ignoredActions: ['auth/requestSignIn/pending', 'auth/requestSignIn/rejected']
+      }
+    })
 });
 
 // Infer the `RootState` and `AppDispatch` types from the store itself

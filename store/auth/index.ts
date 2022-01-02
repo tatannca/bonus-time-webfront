@@ -3,14 +3,12 @@ import { signInWithEmailAndPassword, User, Auth } from 'firebase/auth';
 
 export interface AuthState {
   isLoading: boolean;
-  isAuthenticated: boolean;
   currentUser: null | User;
   authError: null | SerializedError;
 }
 
 const initialState: AuthState = {
   isLoading: false,
-  isAuthenticated: false,
   currentUser: null,
   authError: null
 };
@@ -35,22 +33,29 @@ export const requestSignIn = createAsyncThunk('auth/requestSignIn', async (param
 export const authSlice = createSlice({
   name: 'auth',
   initialState,
-  reducers: {},
+  reducers: {
+    resetAuth: (state) => {
+      state.currentUser = null;
+    }
+  },
   extraReducers: (builder) => {
     builder.addCase(requestSignIn.pending, (state) => {
       state.isLoading = true;
     });
     builder.addCase(requestSignIn.fulfilled, (state, action) => {
       state.isLoading = false;
-      state.isAuthenticated = true;
       state.currentUser = action.payload.data;
     });
     builder.addCase(requestSignIn.rejected, (state, action) => {
       state.isLoading = false;
-      state.isAuthenticated = false;
-      state.authError = action.error;
+      if (action.payload) {
+        state.authError = action.payload as SerializedError;
+      } else {
+        state.authError = action.error;
+      }
     });
   }
 });
 
+export const { resetAuth } = authSlice.actions;
 export default authSlice.reducer;

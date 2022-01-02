@@ -9,7 +9,9 @@ import { User } from 'firebase/auth';
 
 const Dashboard: NextPage = () => {
   const router = useRouter();
-  const [user, setUser] = useState<User | null>(null);
+
+  // TODO: hookに切り出す
+  const [user, setUser] = useState<User | null | undefined>(undefined);
   useEffect(() => {
     const unsubscribe = firebaseAuth.onAuthStateChanged((user) => {
       if (!user) router.push('/');
@@ -18,7 +20,7 @@ const Dashboard: NextPage = () => {
     return () => unsubscribe();
   }, [router]);
 
-  if (!user) return <div>Loading...</div>;
+  if (user === undefined) return <div>Loading...</div>;
 
   return (
     <>

@@ -4,10 +4,14 @@ import { Container, Button } from '@chakra-ui/react';
 import { firebaseAuth } from '../../firebase/config';
 import { useEffect, useState } from 'react';
 import { User } from 'firebase/auth';
+import { useAppDispatch } from '../../store/hooks';
+import { resetAuth } from '../../store/auth';
 
 const Settings: NextPage = () => {
+  const dispatch = useAppDispatch();
   const router = useRouter();
-  const [user, setUser] = useState<User | null>(null);
+  // TODO: hookに切り出す
+  const [user, setUser] = useState<User | null | undefined>(undefined);
   useEffect(() => {
     const unsubscribe = firebaseAuth.onAuthStateChanged((user) => {
       if (!user) router.push('/');
@@ -21,6 +25,7 @@ const Settings: NextPage = () => {
       .signOut()
       .then(() => {
         localStorage.removeItem('access_token');
+        dispatch(resetAuth());
         router.push('/');
       })
       .catch((err) => {
@@ -28,7 +33,7 @@ const Settings: NextPage = () => {
       });
   };
 
-  if (!user) return <div>Loading...</div>;
+  if (user === undefined) return <div>Loading...</div>;
 
   return (
     <>

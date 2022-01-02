@@ -19,6 +19,8 @@ const Home: NextPage = () => {
     console.log(user);
   }, [user]);
 
+  if (height === 0) return <></>;
+
   return (
     <Center h={height}>
       <Box textAlign="center">
