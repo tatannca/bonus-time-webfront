@@ -1,31 +1,39 @@
-import type { NextPage } from 'next'
-import { useRouter } from 'next/router'
-import axios from 'axios'
-import { Container, VStack, Input, InputGroup, InputRightElement, Button, IconButton, Heading } from '@chakra-ui/react'
-import { ChevronLeftIcon } from '@chakra-ui/icons'
-import { createUserWithEmailAndPassword } from 'firebase/auth'
-import { firebaseAuth } from '../../firebase/config'
-import { useState } from 'react'
+import type { NextPage } from 'next';
+import { useRouter } from 'next/router';
+import axios from 'axios';
+import { Container, VStack, Input, InputGroup, InputRightElement, Button, IconButton, Heading } from '@chakra-ui/react';
+import { ChevronLeftIcon } from '@chakra-ui/icons';
+import { createUserWithEmailAndPassword, User } from 'firebase/auth';
+import { firebaseAuth } from '../../firebase/config';
+import { useEffect, useState } from 'react';
 
 const SingUp: NextPage = () => {
-  const router = useRouter()
-  const pageBack = () => router.back()
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [showPass, setShowPass] = useState(false)
+  const router = useRouter();
+  const pageBack = () => router.back();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPass, setShowPass] = useState(false);
 
   const signUp = () => {
     createUserWithEmailAndPassword(firebaseAuth, email, password)
       .then((res) => {
-        const user = res.user
-        console.log('create:', user)
+        const user = res.user;
+        console.log('create:', user);
       })
       .catch((err) => {
-        const errorCode = err.code
-        const errorMessage = err.message
-        console.log(errorCode, errorMessage)
-      })
-  }
+        const errorCode = err.code;
+        const errorMessage = err.message;
+        console.log(errorCode, errorMessage);
+      });
+  };
+
+  // TODO: hookに切り出す
+  const [user, setUser] = useState<User | null | undefined>(undefined);
+  useEffect(() => {
+    firebaseAuth.onAuthStateChanged((user) => {
+      setUser(user);
+    });
+  }, [router]);
 
   // const apiTest = () => {
   //   axios
@@ -37,6 +45,10 @@ const SingUp: NextPage = () => {
   //       console.log(err)
   //     })
   // }
+
+  if (user === undefined) return <div>Loading...</div>;
+
+  if (user) return <div>すでに登録しています</div>;
 
   return (
     <Container>
@@ -64,6 +76,6 @@ const SingUp: NextPage = () => {
         </Button>
       </VStack>
     </Container>
-  )
-}
-export default SingUp
+  );
+};
+export default SingUp;

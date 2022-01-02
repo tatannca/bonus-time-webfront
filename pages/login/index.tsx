@@ -1,35 +1,40 @@
-import type { NextPage } from 'next'
-import { useRouter } from 'next/router'
-import axios from 'axios'
-import { Container, VStack, Input, InputGroup, Button, IconButton, InputRightElement, Heading } from '@chakra-ui/react'
-import { ChevronLeftIcon } from '@chakra-ui/icons'
-import { signInWithEmailAndPassword } from 'firebase/auth'
-import { firebaseAuth } from '../../firebase/config'
-import { useState } from 'react'
+import type { NextPage } from 'next';
+import { useRouter } from 'next/router';
+import axios from 'axios';
+import { Container, VStack, Input, InputGroup, Button, IconButton, InputRightElement, Heading } from '@chakra-ui/react';
+import { ChevronLeftIcon } from '@chakra-ui/icons';
+import { requestSignIn } from '../../store/auth';
+import { firebaseAuth } from '../../firebase/config';
+import { useEffect, useState } from 'react';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { User } from 'firebase/auth';
 
 const SingUp: NextPage = () => {
-  const router = useRouter()
-  const pageBack = () => router.back()
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [showPass, setShowPass] = useState(false)
+  const dispatch = useAppDispatch();
+  const router = useRouter();
+  const pageBack = () => router.back();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [showPass, setShowPass] = useState(false);
+  const authState = useAppSelector((state) => state.auth);
 
-  const login = () => {
-    signInWithEmailAndPassword(firebaseAuth, email, password)
-      .then(async (res) => {
-        const user = res.user
-        const token = await user.getIdToken()
-        localStorage.setItem('access_token', token)
-        console.log('user', user)
-        console.log('token', token)
-        router.push('/dashboard')
-      })
-      .catch((err) => {
-        const errorCode = err.code
-        const errorMessage = err.message
-        console.log(errorCode, errorMessage)
-      })
-  }
+  // TODO: hookに切り出す
+  const [user, setUser] = useState<User | null | undefined>(undefined);
+  useEffect(() => {
+    const unsubscribe = firebaseAuth.onAuthStateChanged((user) => {
+      setUser(user);
+      if (user) router.replace('/dashboard');
+    });
+    return () => unsubscribe();
+  }, [router, user]);
+
+  const login = async () => {
+    await dispatch(requestSignIn({ firebaseAuth, email, password }));
+    firebaseAuth.onAuthStateChanged((user) => {
+      if (user) router.replace('/dashboard');
+      setUser(user);
+    });
+  };
 
   // const apiTest = () => {
   //   axios
@@ -41,6 +46,8 @@ const SingUp: NextPage = () => {
   //       console.log(err)
   //     })
   // }
+
+  if (user || user === undefined) return <div>Loading...</div>;
 
   return (
     <Container>
@@ -63,11 +70,11 @@ const SingUp: NextPage = () => {
             </InputRightElement>
           </InputGroup>
         </VStack>
-        <Button colorScheme="teal" onClick={login}>
+        <Button colorScheme="teal" onClick={login} isLoading={authState.isLoading}>
           ログイン
         </Button>
       </VStack>
     </Container>
-  )
-}
-export default SingUp
+  );
+};
+export default SingUp;
