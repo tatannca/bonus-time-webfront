@@ -15,8 +15,11 @@ const Settings: NextPage = () => {
   const [user, setUser] = useState<User | null | undefined>(undefined);
   useEffect(() => {
     const unsubscribe = firebaseAuth.onAuthStateChanged((user) => {
-      if (!user) router.push('/');
-      setUser(user);
+      if (!user) {
+        router.push('/');
+      } else {
+        setUser(user);
+      }
     });
     return () => unsubscribe();
   }, [router]);
@@ -34,7 +37,7 @@ const Settings: NextPage = () => {
       });
   };
 
-  if (user === undefined) return <Loading />;
+  if (!user) return <Loading />;
 
   return (
     <>
