@@ -6,24 +6,32 @@ import { ChevronLeftIcon } from '@chakra-ui/icons';
 import { createUserWithEmailAndPassword, User } from 'firebase/auth';
 import { firebaseAuth } from '../../firebase/config';
 import { useEffect, useState } from 'react';
+import { catchErrorAuth, signUpAuthStart, signUpAuthSucceed } from '../../store/auth';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
 
 const SingUp: NextPage = () => {
+  const dispatch = useAppDispatch();
   const router = useRouter();
   const pageBack = () => router.back();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPass, setShowPass] = useState(false);
+  const authState = useAppSelector((state) => state.auth);
 
   const signUp = () => {
+    dispatch(signUpAuthStart());
     createUserWithEmailAndPassword(firebaseAuth, email, password)
       .then((res) => {
         const user = res.user;
-        console.log('create:', user);
+        dispatch(signUpAuthSucceed({ user }));
       })
       .catch((err) => {
-        const errorCode = err.code;
-        const errorMessage = err.message;
-        console.log(errorCode, errorMessage);
+        if (err.code || err.message) {
+          const { code, message } = err;
+          dispatch(catchErrorAuth({ code, message }));
+        } else {
+          dispatch(catchErrorAuth(err));
+        }
       });
   };
 
@@ -46,9 +54,13 @@ const SingUp: NextPage = () => {
   //     })
   // }
 
-  if (user === undefined) return <div>Loading...</div>;
+  useEffect(() => {
+    if (user && !authState.isCreatedUser) router.replace('/dashboard');
+  }, [user, authState.isCreatedUser, router]);
 
-  if (user) return <div>すでに登録しています</div>;
+  if (user === undefined || (user && !authState.isCreatedUser)) return <div>Loading...</div>;
+
+  if (user && authState.isCreatedUser) return <div>サービスを使う!</div>;
 
   return (
     <Container>
