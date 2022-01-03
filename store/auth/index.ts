@@ -25,7 +25,11 @@ export const requestSignIn = createAsyncThunk('auth/requestSignIn', async (param
     const res = await signInWithEmailAndPassword(firebaseAuth, email, password);
     const data = res.user.toJSON() as User;
     return { data };
-  } catch (err) {
+  } catch (err: any) {
+    if (err.code || err.message) {
+      const { code, message } = err;
+      return thunkAPI.rejectWithValue({ code, message });
+    }
     return thunkAPI.rejectWithValue(err);
   }
 });
