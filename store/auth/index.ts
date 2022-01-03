@@ -5,14 +5,12 @@ export interface AuthState {
   isLoading: boolean;
   currentUser: null | User;
   authError: null | SerializedError;
-  isCreatedUser: boolean;
 }
 
 const initialState: AuthState = {
   isLoading: false,
   currentUser: null,
-  authError: null,
-  isCreatedUser: false
+  authError: null
 };
 
 type signInParams = {
@@ -47,7 +45,6 @@ export const authSlice = createSlice({
       state.isLoading = false;
       state.currentUser = action.payload.user;
       state.authError = null;
-      state.isCreatedUser = true;
     },
     catchErrorAuth: (state, action) => {
       state.isLoading = false;

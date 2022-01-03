@@ -6,7 +6,6 @@ import { firebaseAuth } from '../../firebase/config';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { User } from 'firebase/auth';
-import { Loading } from '../../components/Loading';
 
 const Dashboard: NextPage = () => {
   const router = useRouter();
@@ -24,7 +23,7 @@ const Dashboard: NextPage = () => {
     return () => unsubscribe();
   }, [router]);
 
-  if (!user) return <Loading />;
+  if (!user) return <></>;
 
   return (
     <>

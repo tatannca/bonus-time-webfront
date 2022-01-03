@@ -8,7 +8,6 @@ import { firebaseAuth } from '../../firebase/config';
 import { useEffect, useState } from 'react';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { User } from 'firebase/auth';
-import { Loading } from '../../components/Loading';
 
 const SingUp: NextPage = () => {
   const dispatch = useAppDispatch();
@@ -56,7 +55,7 @@ const SingUp: NextPage = () => {
   //     })
   // }
 
-  if (user || user === undefined) return <Loading />;
+  if (user || user === undefined) return <></>;
 
   return (
     <Container>
