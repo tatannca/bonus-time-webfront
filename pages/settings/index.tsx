@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import { User } from 'firebase/auth';
 import { useAppDispatch } from '../../store/hooks';
 import { resetAuth } from '../../store/auth';
+import { Loading } from '../../components/Loading';
 
 const Settings: NextPage = () => {
   const dispatch = useAppDispatch();
@@ -33,7 +34,7 @@ const Settings: NextPage = () => {
       });
   };
 
-  if (user === undefined) return <div>Loading...</div>;
+  if (user === undefined) return <Loading />;
 
   return (
     <>
