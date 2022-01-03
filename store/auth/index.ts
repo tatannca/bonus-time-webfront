@@ -5,12 +5,14 @@ export interface AuthState {
   isLoading: boolean;
   currentUser: null | User;
   authError: null | SerializedError;
+  isCreatedUser: boolean;
 }
 
 const initialState: AuthState = {
   isLoading: false,
   currentUser: null,
-  authError: null
+  authError: null,
+  isCreatedUser: false
 };
 
 type signInParams = {
@@ -25,7 +27,11 @@ export const requestSignIn = createAsyncThunk('auth/requestSignIn', async (param
     const res = await signInWithEmailAndPassword(firebaseAuth, email, password);
     const data = res.user.toJSON() as User;
     return { data };
-  } catch (err) {
+  } catch (err: any) {
+    if (err.code || err.message) {
+      const { code, message } = err;
+      return thunkAPI.rejectWithValue({ code, message });
+    }
     return thunkAPI.rejectWithValue(err);
   }
 });
@@ -34,6 +40,19 @@ export const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
+    signUpAuthStart: (state) => {
+      state.isLoading = true;
+    },
+    signUpAuthSucceed: (state, action: PayloadAction<{ user: User }>) => {
+      state.isLoading = false;
+      state.currentUser = action.payload.user;
+      state.authError = null;
+      state.isCreatedUser = true;
+    },
+    catchErrorAuth: (state, action) => {
+      state.isLoading = false;
+      state.authError = action.payload;
+    },
     resetAuth: (state) => {
       state.currentUser = null;
     }
@@ -45,6 +64,7 @@ export const authSlice = createSlice({
     builder.addCase(requestSignIn.fulfilled, (state, action) => {
       state.isLoading = false;
       state.currentUser = action.payload.data;
+      state.authError = null;
     });
     builder.addCase(requestSignIn.rejected, (state, action) => {
       state.isLoading = false;
@@ -57,5 +77,5 @@ export const authSlice = createSlice({
   }
 });
 
-export const { resetAuth } = authSlice.actions;
+export const { resetAuth, signUpAuthStart, signUpAuthSucceed, catchErrorAuth } = authSlice.actions;
 export default authSlice.reducer;
