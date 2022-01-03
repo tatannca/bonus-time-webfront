@@ -39,10 +39,15 @@ const SingUp: NextPage = () => {
   // TODO: hookに切り出す
   const [user, setUser] = useState<User | null | undefined>(undefined);
   useEffect(() => {
-    firebaseAuth.onAuthStateChanged((user) => {
-      setUser(user);
+    const unsubscribe = firebaseAuth.onAuthStateChanged((user) => {
+      if (user && !authState.isCreatedUser) {
+        router.replace('/dashboard');
+      } else {
+        setUser(user);
+      }
     });
-  }, [router]);
+    return () => unsubscribe();
+  }, [router, authState.isCreatedUser]);
 
   // const apiTest = () => {
   //   axios
@@ -55,9 +60,9 @@ const SingUp: NextPage = () => {
   //     })
   // }
 
-  useEffect(() => {
-    if (user && !authState.isCreatedUser) router.replace('/dashboard');
-  }, [user, authState.isCreatedUser, router]);
+  // useEffect(() => {
+  //   if (user && !authState.isCreatedUser) router.replace('/dashboard');
+  // }, [user, authState.isCreatedUser, router]);
 
   if (user === undefined || (user && !authState.isCreatedUser)) return <Loading />;
 

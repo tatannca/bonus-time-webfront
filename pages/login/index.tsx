@@ -23,11 +23,12 @@ const SingUp: NextPage = () => {
   const [user, setUser] = useState<User | null | undefined>(undefined);
   useEffect(() => {
     const unsubscribe = firebaseAuth.onAuthStateChanged(async (user) => {
-      setUser(user);
       if (user) {
         const token = await user.getIdToken();
         localStorage.setItem('access_token', token);
         router.replace('/dashboard');
+      } else {
+        setUser(user);
       }
     });
     return () => unsubscribe();

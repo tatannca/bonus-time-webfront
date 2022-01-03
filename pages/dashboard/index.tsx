@@ -15,20 +15,23 @@ const Dashboard: NextPage = () => {
   const [user, setUser] = useState<User | null | undefined>(undefined);
   useEffect(() => {
     const unsubscribe = firebaseAuth.onAuthStateChanged((user) => {
-      if (!user) router.push('/');
-      setUser(user);
+      if (!user) {
+        router.push('/');
+      } else {
+        setUser(user);
+      }
     });
     return () => unsubscribe();
   }, [router]);
 
-  if (user === undefined) return <Loading />;
+  if (!user) return <Loading />;
 
   return (
     <>
       <Container>
         <Flex align="center" py={3}>
           <InfoIcon color="teal" />
-          <Text pl={2}>UserName Rank:シルバー</Text>
+          <Text pl={2}>UserName</Text>
           <Spacer />
           <NextLink href="/settings" passHref>
             <IconButton as="a" href="/" aria-label="設定" icon={<SettingsIcon />} />
