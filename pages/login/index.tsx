@@ -22,18 +22,27 @@ const SingUp: NextPage = () => {
   // TODO: hookに切り出す
   const [user, setUser] = useState<User | null | undefined>(undefined);
   useEffect(() => {
-    const unsubscribe = firebaseAuth.onAuthStateChanged((user) => {
+    const unsubscribe = firebaseAuth.onAuthStateChanged(async (user) => {
       setUser(user);
-      if (user) router.replace('/dashboard');
+      if (user) {
+        const token = await user.getIdToken();
+        localStorage.setItem('access_token', token);
+        router.replace('/dashboard');
+      }
     });
     return () => unsubscribe();
   }, [router, user]);
 
   const login = async () => {
     await dispatch(requestSignIn({ firebaseAuth, email, password }));
-    firebaseAuth.onAuthStateChanged((user) => {
-      if (user) router.replace('/dashboard');
-      setUser(user);
+    firebaseAuth.onAuthStateChanged(async (user) => {
+      if (user) {
+        const token = await user.getIdToken();
+        localStorage.setItem('access_token', token);
+        router.replace('/dashboard');
+      } else {
+        setUser(user);
+      }
     });
   };
 
