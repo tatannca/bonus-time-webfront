@@ -1,12 +1,11 @@
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
-import { Container, Button } from '@chakra-ui/react';
+import { Container, Button, Center } from '@chakra-ui/react';
 import { firebaseAuth } from '../../firebase/config';
 import { useEffect, useState } from 'react';
 import { User } from 'firebase/auth';
 import { useAppDispatch } from '../../store/hooks';
 import { resetAuth } from '../../store/auth';
-import { Loading } from '../../components/Loading';
 
 const Settings: NextPage = () => {
   const dispatch = useAppDispatch();
@@ -37,12 +36,14 @@ const Settings: NextPage = () => {
       });
   };
 
-  if (!user) return <Loading />;
+  if (!user) return <></>;
 
   return (
     <>
       <Container>
-        <Button onClick={logout}>ログアウト</Button>
+        <Center pt="10">
+          <Button onClick={logout}>ログアウト</Button>
+        </Center>
       </Container>
     </>
   );

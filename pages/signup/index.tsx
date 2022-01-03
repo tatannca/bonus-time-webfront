@@ -8,7 +8,6 @@ import { firebaseAuth } from '../../firebase/config';
 import { useEffect, useState } from 'react';
 import { catchErrorAuth, signUpAuthStart, signUpAuthSucceed } from '../../store/auth';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import { Loading } from '../../components/Loading';
 
 const SingUp: NextPage = () => {
   const dispatch = useAppDispatch();
@@ -40,14 +39,14 @@ const SingUp: NextPage = () => {
   const [user, setUser] = useState<User | null | undefined>(undefined);
   useEffect(() => {
     const unsubscribe = firebaseAuth.onAuthStateChanged((user) => {
-      if (user && !authState.isCreatedUser) {
+      if (user) {
         router.replace('/dashboard');
       } else {
         setUser(user);
       }
     });
     return () => unsubscribe();
-  }, [router, authState.isCreatedUser]);
+  }, [router]);
 
   // const apiTest = () => {
   //   axios
@@ -64,9 +63,7 @@ const SingUp: NextPage = () => {
   //   if (user && !authState.isCreatedUser) router.replace('/dashboard');
   // }, [user, authState.isCreatedUser, router]);
 
-  if (user === undefined || (user && !authState.isCreatedUser)) return <Loading />;
-
-  if (user && authState.isCreatedUser) return <div>サービスを使う!</div>;
+  if (user === undefined || user) return <></>;
 
   return (
     <Container>
