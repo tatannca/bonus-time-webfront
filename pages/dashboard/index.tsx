@@ -1,11 +1,12 @@
 import type { NextPage } from 'next';
 import NextLink from 'next/link';
-import { Container, Text, Flex, Spacer, IconButton, Box, Center } from '@chakra-ui/react';
+import { Container, Text, Flex, Spacer, IconButton, Box, VStack } from '@chakra-ui/react';
 import { SettingsIcon, InfoIcon } from '@chakra-ui/icons';
 import { firebaseAuth } from '../../firebase/config';
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/router';
 import { User } from 'firebase/auth';
+import { format } from 'date-fns';
 import Lottie from 'lottie-web';
 import animationData from '../../public/57820-cute-monster.json';
 
@@ -38,6 +39,15 @@ const Dashboard: NextPage = () => {
     }
   }, [LottieRef, user]);
 
+  const [currentTime, setCurrentTime] = useState('');
+  useEffect(() => {
+    const id = setInterval(() => {
+      const time = format(new Date(), 'yyyy年MM年dd日 hh:mm:ss');
+      setCurrentTime(time);
+    }, 1000);
+    return () => clearInterval(id);
+  }, []);
+
   if (!user) return <></>;
 
   return (
@@ -51,9 +61,10 @@ const Dashboard: NextPage = () => {
             <IconButton as="a" href="/" aria-label="設定" icon={<SettingsIcon />} />
           </NextLink>
         </Flex>
-        <Center>
+        <VStack>
+          <Text>{currentTime}</Text>
           <Box w="200px" ref={LottieRef} />
-        </Center>
+        </VStack>
       </Container>
     </>
   );
