@@ -1,6 +1,6 @@
 import type { NextPage } from 'next';
 import NextLink from 'next/link';
-import { Container, Text, Flex, Spacer, IconButton, Box, VStack } from '@chakra-ui/react';
+import { Container, Text, Flex, Spacer, IconButton, Box, VStack, Center } from '@chakra-ui/react';
 import { SettingsIcon, InfoIcon } from '@chakra-ui/icons';
 import { firebaseAuth } from '../../firebase/config';
 import { useEffect, useRef, useState } from 'react';
@@ -39,11 +39,16 @@ const Dashboard: NextPage = () => {
     }
   }, [LottieRef, user]);
 
-  const [currentTime, setCurrentTime] = useState('');
+  const now = new Date();
+  const [today, setToday] = useState(format(now, 'yyyy年MM年dd日(E)'));
+  const [currentTime, setCurrentTime] = useState(format(now, 'hh:mm'));
+  const [currentSeconds, setCurrentSeconds] = useState(format(now, 'ss'));
   useEffect(() => {
     const id = setInterval(() => {
-      const time = format(new Date(), 'yyyy年MM年dd日 hh:mm:ss');
-      setCurrentTime(time);
+      const now = new Date();
+      setToday(format(now, 'yyyy年MM年dd日(E)'));
+      setCurrentTime(format(now, 'HH:mm'));
+      setCurrentSeconds(format(now, 'ss'));
     }, 1000);
     return () => clearInterval(id);
   }, []);
@@ -61,8 +66,20 @@ const Dashboard: NextPage = () => {
             <IconButton as="a" href="/" aria-label="設定" icon={<SettingsIcon />} />
           </NextLink>
         </Flex>
+        <Center>
+          <Box>
+            <Flex alignItems="baseline" justifyContent="center">
+              <Text style={{ fontFeatureSettings: 'thum', fontVariantNumeric: 'tabular-nums' }} fontSize="5xl">
+                {currentTime}
+              </Text>
+              <Text style={{ fontFeatureSettings: 'thum', fontVariantNumeric: 'tabular-nums' }} pl="1">
+                {currentSeconds}
+              </Text>
+            </Flex>
+            <Text textAlign="center">{today}</Text>
+          </Box>
+        </Center>
         <VStack>
-          <Text>{currentTime}</Text>
           <Box w="200px" ref={LottieRef} />
         </VStack>
       </Container>
