@@ -1,6 +1,6 @@
 import type { NextPage } from 'next';
 import NextLink from 'next/link';
-import { Container, Text, Flex, Spacer, IconButton, Box, VStack } from '@chakra-ui/react';
+import { Container, Text, Flex, Spacer, IconButton, Box, VStack, Center, Button } from '@chakra-ui/react';
 import { SettingsIcon, InfoIcon } from '@chakra-ui/icons';
 import { firebaseAuth } from '../../firebase/config';
 import { useEffect, useRef, useState } from 'react';
@@ -26,6 +26,20 @@ const Dashboard: NextPage = () => {
     return () => unsubscribe();
   }, [router]);
 
+  const now = new Date();
+  const [today, setToday] = useState(format(now, 'yyyy年MM年dd日(E)'));
+  const [currentTime, setCurrentTime] = useState(format(now, 'HH:mm'));
+  const [currentSeconds, setCurrentSeconds] = useState(format(now, 'ss'));
+  useEffect(() => {
+    const id = setInterval(() => {
+      const now = new Date();
+      setToday(format(now, 'yyyy年MM年dd日(E)'));
+      setCurrentTime(format(now, 'HH:mm'));
+      setCurrentSeconds(format(now, 'ss'));
+    }, 1000);
+    return () => clearInterval(id);
+  }, []);
+
   const LottieRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (LottieRef.current) {
@@ -38,15 +52,6 @@ const Dashboard: NextPage = () => {
       });
     }
   }, [LottieRef, user]);
-
-  const [currentTime, setCurrentTime] = useState('');
-  useEffect(() => {
-    const id = setInterval(() => {
-      const time = format(new Date(), 'yyyy年MM年dd日 hh:mm:ss');
-      setCurrentTime(time);
-    }, 1000);
-    return () => clearInterval(id);
-  }, []);
 
   if (!user) return <></>;
 
@@ -61,9 +66,29 @@ const Dashboard: NextPage = () => {
             <IconButton as="a" href="/" aria-label="設定" icon={<SettingsIcon />} />
           </NextLink>
         </Flex>
+        <Box>
+          <Flex alignItems="baseline" justifyContent="center">
+            <Text style={{ fontFeatureSettings: 'thum', fontVariantNumeric: 'tabular-nums' }} fontSize="5xl">
+              {currentTime}
+            </Text>
+            <Text style={{ fontFeatureSettings: 'thum', fontVariantNumeric: 'tabular-nums' }} pl="1">
+              {currentSeconds}
+            </Text>
+          </Flex>
+          <Text pb="4" textAlign="center">
+            {today}
+          </Text>
+        </Box>
         <VStack>
-          <Text>{currentTime}</Text>
           <Box w="200px" ref={LottieRef} />
+          <Flex>
+            <Button colorScheme="teal" borderRadius="full" shadow="base" h="80px" w="80px">
+              出勤
+            </Button>
+            <Button borderRadius="full" shadow="base" h="80px" w="80px" ml="4">
+              退勤
+            </Button>
+          </Flex>
         </VStack>
       </Container>
     </>
