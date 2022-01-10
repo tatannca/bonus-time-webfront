@@ -57,7 +57,7 @@ const Dashboard: NextPage = () => {
 
   return (
     <>
-      <Container>
+      <Container pb="10">
         <Flex align="center" py={3}>
           <InfoIcon color="teal" />
           <Text pl={2}>UserName</Text>
@@ -82,13 +82,18 @@ const Dashboard: NextPage = () => {
         <VStack>
           <Box w="200px" ref={LottieRef} />
           <Flex>
-            <Button colorScheme="teal" borderRadius="full" shadow="base" h="80px" w="80px">
+            <Button colorScheme="teal" borderRadius="full" shadow="base" h="100px" w="100px">
               出勤
             </Button>
-            <Button borderRadius="full" shadow="base" h="80px" w="80px" ml="4">
+            <Button borderRadius="full" shadow="base" h="100px" w="100px" ml="10">
               退勤
             </Button>
           </Flex>
+          <Box pt="5">
+            <NextLink href="/" passHref>
+              <Button as="a">勤怠一覧</Button>
+            </NextLink>
+          </Box>
         </VStack>
       </Container>
     </>
