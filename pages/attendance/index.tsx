@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { User } from 'firebase/auth';
 import { firebaseAuth } from '../../firebase/config';
 import { useRouter } from 'next/router';
+import { Container, Text, Table, Thead, Tbody, Tr, Th, Td } from '@chakra-ui/react';
 
 const Attendance: NextPage = () => {
   const router = useRouter();
@@ -22,6 +23,46 @@ const Attendance: NextPage = () => {
 
   if (!user) return <></>;
 
-  return <div>Attendance</div>;
+  return (
+    <Container maxW="container.sm">
+      <Text py={5} textAlign="center">
+        今月
+      </Text>
+      <Table variant="striped" size="sm">
+        <Thead>
+          <Tr>
+            <Th>日付</Th>
+            <Th>出勤</Th>
+            <Th>退勤</Th>
+            <Th>休憩</Th>
+            <Th>就業時間</Th>
+          </Tr>
+        </Thead>
+        <Tbody>
+          <Tr>
+            <Td>10/10</Td>
+            <Td>--:--</Td>
+            <Td>--:--</Td>
+            <Td>--:--</Td>
+            <Td>--:--</Td>
+          </Tr>
+          <Tr>
+            <Td>10/10</Td>
+            <Td>--:--</Td>
+            <Td>--:--</Td>
+            <Td>--:--</Td>
+            <Td>--:--</Td>
+          </Tr>
+          <Tr>
+            <Td>10/10</Td>
+            <Td>--:--</Td>
+            <Td>--:--</Td>
+            <Td>--:--</Td>
+            <Td>--:--</Td>
+          </Tr>
+        </Tbody>
+      </Table>
+    </Container>
+  );
 };
 export default Attendance;
