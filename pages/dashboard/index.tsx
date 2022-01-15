@@ -82,7 +82,11 @@ const Dashboard: NextPage = () => {
         </Box>
         <VStack>
           <Box w="200px" ref={LottieRef} />
-          <TimeStampButton />
+          <Flex>
+            <TimeStampButton text="出勤" colorScheme="teal" />
+            <Spacer w={10} />
+            <TimeStampButton text="退勤" />
+          </Flex>
           <Box pt="5">
             <NextLink href="/" passHref>
               <Button as="a">勤怠一覧</Button>

@@ -1,25 +1,22 @@
 import { NextPage } from 'next';
-import { Box, Button, Flex, Text } from '@chakra-ui/react';
+import { Box, Button, Text, ThemingProps } from '@chakra-ui/react';
+import { format } from 'date-fns';
 
-export const TimeStampButton: NextPage = () => {
+type PickType<T, K extends keyof T> = T[K];
+type TimeStampButtonProps = {
+  text: string;
+  colorScheme?: PickType<ThemingProps, 'colorScheme'>;
+};
+
+export const TimeStampButton: NextPage<TimeStampButtonProps> = ({ text, colorScheme }) => {
   return (
-    <Flex>
-      <Box>
-        <Text textAlign="center" pb={3}>
-          --:--
-        </Text>
-        <Button colorScheme="teal" borderRadius="full" shadow="base" h="100px" w="100px">
-          出勤
-        </Button>
-      </Box>
-      <Box ml="10">
-        <Text textAlign="center" pb={3}>
-          --:--
-        </Text>
-        <Button borderRadius="full" shadow="base" h="100px" w="100px">
-          退勤
-        </Button>
-      </Box>
-    </Flex>
+    <Box>
+      <Text textAlign="center" pb={3}>
+        --:--
+      </Text>
+      <Button colorScheme={colorScheme} borderRadius="full" shadow="base" h="100px" w="100px">
+        {text}
+      </Button>
+    </Box>
   );
 };
