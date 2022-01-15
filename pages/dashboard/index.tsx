@@ -88,7 +88,7 @@ const Dashboard: NextPage = () => {
             <TimeStampButton text="退勤" />
           </Flex>
           <Box pt="5">
-            <NextLink href="/" passHref>
+            <NextLink href="/attendance" passHref>
               <Button as="a">勤怠一覧</Button>
             </NextLink>
           </Box>
