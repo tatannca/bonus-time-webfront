@@ -9,6 +9,7 @@ import { User } from 'firebase/auth';
 import { format } from 'date-fns';
 import Lottie from 'lottie-web';
 import animationData from '../../public/57820-cute-monster.json';
+import { TimeStampButton } from '../../components/TimeStampButton';
 
 const Dashboard: NextPage = () => {
   const router = useRouter();
@@ -81,14 +82,7 @@ const Dashboard: NextPage = () => {
         </Box>
         <VStack>
           <Box w="200px" ref={LottieRef} />
-          <Flex>
-            <Button colorScheme="teal" borderRadius="full" shadow="base" h="100px" w="100px">
-              出勤
-            </Button>
-            <Button borderRadius="full" shadow="base" h="100px" w="100px" ml="10">
-              退勤
-            </Button>
-          </Flex>
+          <TimeStampButton />
           <Box pt="5">
             <NextLink href="/" passHref>
               <Button as="a">勤怠一覧</Button>
