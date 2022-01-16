@@ -1,5 +1,6 @@
 import type { NextPage } from 'next';
 import NextLink from 'next/link';
+import axios from 'axios';
 import {
   Container,
   Text,
@@ -83,6 +84,17 @@ const Dashboard: NextPage = () => {
     }
   }, [LottieRef, user]);
 
+  // TODO: レスポンステストができたら消す
+  type testRestType = {
+    message: string;
+  };
+  const [testRes, setTestRes] = useState<testRestType>();
+  const responseTest = async () => {
+    const res = await axios.get('https://api-bonus-time.onrender.com');
+    const data: testRestType = res.data;
+    setTestRes(data);
+  };
+
   if (!user) return <></>;
 
   return (
@@ -125,6 +137,13 @@ const Dashboard: NextPage = () => {
               <Button as="a">勤怠一覧</Button>
             </NextLink>
           </Flex>
+          {/* TODO: レスポンステストができたら消す */}
+          <Box pt={5}>
+            <Button onClick={responseTest}>Response TEST</Button>
+            <Text pt={2} textAlign="center">
+              {testRes?.message}
+            </Text>
+          </Box>
         </VStack>
 
         <Modal size={'xs'} isOpen={isOpen} onClose={onClose}>
