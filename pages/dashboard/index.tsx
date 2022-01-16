@@ -1,6 +1,26 @@
 import type { NextPage } from 'next';
 import NextLink from 'next/link';
-import { Container, Text, Flex, Spacer, IconButton, Box, VStack, Center, Button } from '@chakra-ui/react';
+import {
+  Container,
+  Text,
+  Flex,
+  Spacer,
+  IconButton,
+  Box,
+  VStack,
+  Button,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalFooter,
+  ModalBody,
+  ModalCloseButton,
+  useDisclosure,
+  InputGroup,
+  InputRightAddon,
+  Input
+} from '@chakra-ui/react';
 import { SettingsIcon, InfoIcon } from '@chakra-ui/icons';
 import { firebaseAuth } from '../../firebase/config';
 import { useEffect, useRef, useState } from 'react';
@@ -13,6 +33,15 @@ import { TimeStampButton } from '../../components/TimeStampButton';
 
 const Dashboard: NextPage = () => {
   const router = useRouter();
+  const [restTime, setRestTime] = useState('');
+  const [editRestTime, setEditRestTime] = useState('');
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
+  const onEditRestTime = () => {
+    console.log('ここでapi叩いて保存');
+    setRestTime(editRestTime);
+    onClose();
+  };
 
   // TODO: hookに切り出す
   const [user, setUser] = useState<User | null | undefined>(undefined);
@@ -87,12 +116,44 @@ const Dashboard: NextPage = () => {
             <Spacer w={10} />
             <TimeStampButton text="退勤" />
           </Flex>
-          <Box pt="5">
+          <Flex pt={5}>
+            <Box>
+              <Button onClick={onOpen}>休憩時間</Button>
+            </Box>
+            <Spacer w={5} />
             <NextLink href="/attendance" passHref>
               <Button as="a">勤怠一覧</Button>
             </NextLink>
-          </Box>
+          </Flex>
         </VStack>
+
+        <Modal size={'xs'} isOpen={isOpen} onClose={onClose}>
+          <ModalOverlay />
+          <ModalContent>
+            <ModalHeader>休憩時間</ModalHeader>
+            <ModalCloseButton />
+            <ModalBody>
+              <InputGroup>
+                <Input
+                  type="number"
+                  placeholder="分単位で入力してください"
+                  defaultValue={restTime}
+                  onChange={(e) => setEditRestTime(e.target.value)}
+                />
+                <InputRightAddon>分</InputRightAddon>
+              </InputGroup>
+            </ModalBody>
+
+            <ModalFooter>
+              <Button colorScheme="blue" mr={3} onClick={onClose}>
+                キャンセル
+              </Button>
+              <Button onClick={onEditRestTime} variant="ghost">
+                保存
+              </Button>
+            </ModalFooter>
+          </ModalContent>
+        </Modal>
       </Container>
     </>
   );

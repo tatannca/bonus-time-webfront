@@ -39,6 +39,7 @@ export const TimeStampButton: NextPage<TimeStampButtonProps> = ({ text, colorSch
 
   const onEditTimeStamp = () => {
     setTimeStamp(editTimeStamp);
+    console.log('ここでapi叩いて保存');
     onClose();
   };
 
@@ -64,7 +65,7 @@ export const TimeStampButton: NextPage<TimeStampButtonProps> = ({ text, colorSch
               キャンセル
             </Button>
             <Button onClick={onEditTimeStamp} variant="ghost">
-              決定
+              保存
             </Button>
           </ModalFooter>
         </ModalContent>
