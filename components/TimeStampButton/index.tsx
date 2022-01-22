@@ -25,7 +25,8 @@ type TimeStampButtonProps = {
 
 export const TimeStampButton: NextPage<TimeStampButtonProps> = ({ text, colorScheme }) => {
   const [timeStamp, setTimeStamp] = useState<string | null>(null);
-  const [editTimeStamp, setEditTimeStamp] = useState<string | null>(null);
+  const [editedTimeStamp, setEditedTimeStamp] = useState<string | null>(null);
+  // const [formatTime, setFormatTime] = useState<string | null>(null);
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   const onTimeStamp = () => {
@@ -38,8 +39,10 @@ export const TimeStampButton: NextPage<TimeStampButtonProps> = ({ text, colorSch
   };
 
   const onEditTimeStamp = () => {
-    setTimeStamp(editTimeStamp);
-    console.log('ここでapi叩いて保存');
+    if (editedTimeStamp) {
+      setTimeStamp(editedTimeStamp);
+      console.log('ここでapi叩いて保存', editedTimeStamp);
+    }
     onClose();
   };
 
@@ -57,7 +60,7 @@ export const TimeStampButton: NextPage<TimeStampButtonProps> = ({ text, colorSch
           <ModalHeader>打刻編集</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <Input type="time" defaultValue={timeStamp ?? ''} onChange={(e) => setEditTimeStamp(e.target.value)} />
+            <Input type="time" defaultValue={timeStamp ?? ''} onChange={(e) => setEditedTimeStamp(e.target.value)} />
           </ModalBody>
 
           <ModalFooter>
