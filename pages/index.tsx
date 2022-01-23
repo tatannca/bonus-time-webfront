@@ -56,9 +56,20 @@ const Home: NextPage = () => {
   return (
     <Center h={height}>
       <Box textAlign="center">
-        <div>
+        <Box
+        // position="relative"
+        // _after={{
+        //   content: `"BETA"`,
+        //   position: 'absolute',
+        //   bottom: '30px',
+        //   left: '50%',
+        //   transform: 'translateX(-50%)',
+        //   fontWeight: 'bold',
+        //   fontSize: '24px'
+        // }}
+        >
           <NextImage src="/logo_bonus-time.png" width={200} height={200} alt="BONUS TIME" />
-        </div>
+        </Box>
         <NextLink href="/login" passHref>
           <Button as="a" colorScheme="teal" mt={2}>
             ログイン
