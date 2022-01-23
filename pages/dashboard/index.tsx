@@ -20,7 +20,8 @@ import {
   useDisclosure,
   InputGroup,
   InputRightAddon,
-  Input
+  Input,
+  Center
 } from '@chakra-ui/react';
 import { SettingsIcon, InfoIcon } from '@chakra-ui/icons';
 import { firebaseAuth } from '../../firebase/config';
@@ -88,11 +89,20 @@ const Dashboard: NextPage = () => {
   type testRestType = {
     message: string;
   };
-  const [testRes, setTestRes] = useState<testRestType>();
-  const responseTest = async () => {
-    const res = await axios.get('https://api-bonus-time.onrender.com');
+
+  // https://api-bonus-time.onrender.com
+  // http://localhost:5000/
+  const [testResPublic, setTestResPublic] = useState<testRestType>();
+  const [testResPrivate, setTestResPrivate] = useState<testRestType>();
+  const responseTestPublic = async () => {
+    const res = await axios.get('http://localhost:5000/public');
     const data: testRestType = res.data;
-    setTestRes(data);
+    setTestResPublic(data);
+  };
+  const responseTestPrivate = async () => {
+    const res = await axios.get('http://localhost:5000/private');
+    const data: testRestType = res.data;
+    setTestResPrivate(data);
   };
 
   if (!user) return <></>;
@@ -100,6 +110,20 @@ const Dashboard: NextPage = () => {
   return (
     <>
       <Container pb="10">
+        {/* TODO: レスポンステストができたら消す */}
+        <Center textAlign="center">
+          <Box pt={5}>
+            <Button onClick={responseTestPublic}>Response TEST (Public)</Button>
+            <Text pt={2} textAlign="center">
+              {testResPublic?.message}
+            </Text>
+            <Button onClick={responseTestPrivate}>Response TEST (Private)</Button>
+            <Text pt={2} textAlign="center">
+              {testResPrivate?.message}
+            </Text>
+          </Box>
+        </Center>
+
         <Flex align="center" py={3}>
           <InfoIcon color="teal" />
           <Text pl={2}>UserName</Text>
@@ -137,13 +161,6 @@ const Dashboard: NextPage = () => {
               <Button as="a">勤怠一覧</Button>
             </NextLink>
           </Flex>
-          {/* TODO: レスポンステストができたら消す */}
-          <Box pt={5}>
-            <Button onClick={responseTest}>Response TEST</Button>
-            <Text pt={2} textAlign="center">
-              {testRes?.message}
-            </Text>
-          </Box>
         </VStack>
 
         <Modal size={'xs'} isOpen={isOpen} onClose={onClose}>
