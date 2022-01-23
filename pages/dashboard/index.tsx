@@ -100,7 +100,10 @@ const Dashboard: NextPage = () => {
     setTestResPublic(data);
   };
   const responseTestPrivate = async () => {
-    const res = await axios.get('http://localhost:5000/private');
+    const token = window.localStorage.getItem('access_token');
+    const res = await axios.get('http://localhost:5000/private', {
+      headers: { Authorization: `Bearer ${token}` }
+    });
     const data: testRestType = res.data;
     setTestResPrivate(data);
   };

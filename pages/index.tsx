@@ -3,6 +3,7 @@ import NextImage from 'next/image';
 import NextLink from 'next/link';
 import { Box, Button, Text, Link, Center } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
+import axios from 'axios';
 
 const Home: NextPage = () => {
   const [height, setHeight] = useState(0);
@@ -12,6 +13,26 @@ const Home: NextPage = () => {
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
+
+  // TODO: レスポンステストができたら消す
+  type testRestType = {
+    message: string;
+  };
+  const [testResPublic, setTestResPublic] = useState<testRestType>();
+  const [testResPrivate, setTestResPrivate] = useState<testRestType>();
+  const responseTestPublic = async () => {
+    const res = await axios.get('http://localhost:5000/public');
+    const data: testRestType = res.data;
+    setTestResPublic(data);
+  };
+  const responseTestPrivate = async () => {
+    const token = window.localStorage.getItem('access_token');
+    const res = await axios.get('http://localhost:5000/private', {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    const data: testRestType = res.data;
+    setTestResPrivate(data);
+  };
 
   if (height === 0) return <></>;
 
@@ -32,6 +53,20 @@ const Home: NextPage = () => {
             <Link color="teal.500">こちら</Link>
           </NextLink>
         </Text>
+
+        {/* TODO: レスポンステストができたら消す */}
+        <Center textAlign="center">
+          <Box pt={5}>
+            <Button onClick={responseTestPublic}>Response TEST (Public)</Button>
+            <Text pt={2} textAlign="center">
+              {testResPublic?.message}
+            </Text>
+            <Button onClick={responseTestPrivate}>Response TEST (Private)</Button>
+            <Text pt={2} textAlign="center">
+              {testResPrivate?.message}
+            </Text>
+          </Box>
+        </Center>
       </Box>
     </Center>
   );
