@@ -18,8 +18,19 @@ const Home: NextPage = () => {
   type testRestType = {
     message: string;
   };
+  type ResponseError = {
+    response: {
+      data: {
+        Message: {
+          ErrorCode: string;
+        };
+      };
+    };
+  };
+  // https://api-bonus-time.onrender.com
+  // http://localhost:5000/
   const [testResPublic, setTestResPublic] = useState<testRestType>();
-  const [testResPrivate, setTestResPrivate] = useState<testRestType>();
+  const [testResPrivate, setTestResPrivate] = useState<string>();
   const responseTestPublic = async () => {
     const res = await axios.get('http://localhost:5000/public');
     const data: testRestType = res.data;
@@ -27,11 +38,17 @@ const Home: NextPage = () => {
   };
   const responseTestPrivate = async () => {
     const token = window.localStorage.getItem('access_token');
-    const res = await axios.get('http://localhost:5000/private', {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-    const data: testRestType = res.data;
-    setTestResPrivate(data);
+    try {
+      const res = await axios.get('http://localhost:5000/private', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      const data: testRestType = res.data;
+      setTestResPrivate(data.message);
+    } catch (err) {
+      const { response } = err as ResponseError;
+      const data = response.data.Message.ErrorCode;
+      setTestResPrivate(data);
+    }
   };
 
   if (height === 0) return <></>;
@@ -63,7 +80,7 @@ const Home: NextPage = () => {
             </Text>
             <Button onClick={responseTestPrivate}>Response TEST (Private)</Button>
             <Text pt={2} textAlign="center">
-              {testResPrivate?.message}
+              {testResPrivate}
             </Text>
           </Box>
         </Center>
