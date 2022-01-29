@@ -50,6 +50,9 @@ export const authSlice = createSlice({
       state.isLoading = false;
       state.authError = action.payload;
     },
+    updateToken: (state, action: PayloadAction<{ user: User }>) => {
+      state.currentUser = action.payload.user;
+    },
     resetAuth: (state) => {
       state.currentUser = null;
     }
@@ -74,5 +77,5 @@ export const authSlice = createSlice({
   }
 });
 
-export const { resetAuth, signUpAuthStart, signUpAuthSucceed, catchErrorAuth } = authSlice.actions;
+export const { signUpAuthStart, signUpAuthSucceed, catchErrorAuth, resetAuth, updateToken } = authSlice.actions;
 export default authSlice.reducer;

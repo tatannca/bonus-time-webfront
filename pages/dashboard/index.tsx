@@ -92,7 +92,7 @@ const Dashboard: NextPage = () => {
   type ResponseError = {
     response: {
       data: {
-        Message: {
+        message: {
           ErrorCode: string;
         };
       };
@@ -117,7 +117,7 @@ const Dashboard: NextPage = () => {
       setTestResPrivate(data.message);
     } catch (err) {
       const { response } = err as ResponseError;
-      const data = response.data.Message.ErrorCode;
+      const data = response.data.message.ErrorCode;
       setTestResPrivate(data);
     }
   };
