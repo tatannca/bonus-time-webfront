@@ -103,14 +103,14 @@ const Dashboard: NextPage = () => {
   const [testResPublic, setTestResPublic] = useState<testRestType>();
   const [testResPrivate, setTestResPrivate] = useState<string>();
   const responseTestPublic = async () => {
-    const res = await axios.get(`http://localhost:5000/public`);
+    const res = await axios.get(`https://api-bonus-time.onrender.com/public`);
     const data: testRestType = res.data;
     setTestResPublic(data);
   };
   const responseTestPrivate = async () => {
     const token = window.localStorage.getItem('access_token');
     try {
-      const res = await axios.get(`http://localhost:5000/private`, {
+      const res = await axios.get(`https://api-bonus-time.onrender.com/private`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       const data: testRestType = res.data;
