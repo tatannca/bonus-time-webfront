@@ -1,10 +1,12 @@
 import { createSlice, PayloadAction, createAsyncThunk, SerializedError } from '@reduxjs/toolkit';
 import { signInWithEmailAndPassword, User, Auth } from 'firebase/auth';
+import { useRouter } from 'next/router';
+import { firebaseAuth } from '../../firebase/config';
 
-export interface AuthState {
+interface AuthState {
   isLoading: boolean;
-  currentUser: null | User;
-  authError: null | SerializedError;
+  currentUser: User | null | undefined;
+  authError: SerializedError | null;
 }
 
 const initialState: AuthState = {
@@ -33,6 +35,14 @@ export const requestSignIn = createAsyncThunk('auth/requestSignIn', async (param
     return thunkAPI.rejectWithValue(err);
   }
 });
+export const requestSignOut = createAsyncThunk('auth/requestSignOut', async (_, thunkAPI) => {
+  try {
+    await firebaseAuth.signOut();
+    window.localStorage.removeItem('access_token');
+  } catch (err) {
+    return thunkAPI.rejectWithValue(err);
+  }
+});
 
 export const authSlice = createSlice({
   name: 'auth',
@@ -52,9 +62,6 @@ export const authSlice = createSlice({
     },
     updateToken: (state, action: PayloadAction<{ user: User }>) => {
       state.currentUser = action.payload.user;
-    },
-    resetAuth: (state) => {
-      state.currentUser = null;
     }
   },
   extraReducers: (builder) => {
@@ -74,8 +81,19 @@ export const authSlice = createSlice({
         state.authError = action.error;
       }
     });
+    builder.addCase(requestSignOut.pending, (state) => {
+      state.isLoading = true;
+    });
+    builder.addCase(requestSignOut.fulfilled, (state) => {
+      state.isLoading = false;
+      state.currentUser = null;
+    });
+    builder.addCase(requestSignOut.rejected, (state, action) => {
+      state.isLoading = false;
+      state.authError = action.error;
+    });
   }
 });
 
-export const { signUpAuthStart, signUpAuthSucceed, catchErrorAuth, resetAuth, updateToken } = authSlice.actions;
+export const { signUpAuthStart, signUpAuthSucceed, catchErrorAuth, updateToken } = authSlice.actions;
 export default authSlice.reducer;

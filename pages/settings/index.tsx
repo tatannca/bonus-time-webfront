@@ -5,7 +5,7 @@ import { firebaseAuth } from '../../firebase/config';
 import { useEffect, useState } from 'react';
 import { User } from 'firebase/auth';
 import { useAppDispatch } from '../../store/hooks';
-import { resetAuth } from '../../store/auth';
+import { requestSignOut } from '../../store/auth';
 
 const Settings: NextPage = () => {
   const dispatch = useAppDispatch();
@@ -24,16 +24,9 @@ const Settings: NextPage = () => {
   }, [router]);
 
   const logout = () => {
-    firebaseAuth
-      .signOut()
-      .then(() => {
-        localStorage.removeItem('access_token');
-        dispatch(resetAuth());
-        router.push('/');
-      })
-      .catch((err) => {
-        console.log(err);
-      });
+    dispatch(requestSignOut()).then(() => {
+      router.push('/');
+    });
   };
 
   if (!user) return <></>;
