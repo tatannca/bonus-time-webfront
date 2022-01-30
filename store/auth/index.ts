@@ -1,6 +1,5 @@
 import { createSlice, PayloadAction, createAsyncThunk, SerializedError } from '@reduxjs/toolkit';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword, User, Auth } from 'firebase/auth';
-import { useRouter } from 'next/router';
 import { firebaseAuth } from '../../firebase/config';
 
 interface AuthState {
@@ -11,7 +10,7 @@ interface AuthState {
 
 const initialState: AuthState = {
   isLoading: false,
-  currentUser: null,
+  currentUser: undefined,
   authError: null
 };
 
@@ -84,7 +83,7 @@ export const authSlice = createSlice({
       state.isLoading = false;
       state.authError = action.payload;
     },
-    updateToken: (state, action: PayloadAction<{ user: User }>) => {
+    updateUser: (state, action: PayloadAction<{ user: User | null }>) => {
       state.currentUser = action.payload.user;
     }
   },
@@ -134,5 +133,5 @@ export const authSlice = createSlice({
   }
 });
 
-export const { signUpAuthStart, signUpAuthSucceed, catchErrorAuth, updateToken } = authSlice.actions;
+export const { signUpAuthStart, signUpAuthSucceed, catchErrorAuth, updateUser } = authSlice.actions;
 export default authSlice.reducer;

@@ -24,39 +24,25 @@ import {
   Center
 } from '@chakra-ui/react';
 import { SettingsIcon, InfoIcon } from '@chakra-ui/icons';
-import { firebaseAuth } from '../../firebase/config';
 import { useEffect, useRef, useState } from 'react';
-import { useRouter } from 'next/router';
-import { User } from 'firebase/auth';
 import { format } from 'date-fns';
 import Lottie from 'lottie-web';
 import animationData from '../../public/57820-cute-monster.json';
 import { TimeStampButton } from '../../components/TimeStampButton';
+import { PrivateRoute } from '../../components/Auth';
+import { useAuthState } from '../../store/hooks';
 
 const Dashboard: NextPage = () => {
-  const router = useRouter();
   const [restTime, setRestTime] = useState('');
   const [editRestTime, setEditRestTime] = useState('');
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const { AuthState } = useAuthState();
 
   const onEditRestTime = () => {
     console.log('ここでapi叩いて保存');
     setRestTime(editRestTime);
     onClose();
   };
-
-  // TODO: hookに切り出す
-  const [user, setUser] = useState<User | null | undefined>(undefined);
-  useEffect(() => {
-    const unsubscribe = firebaseAuth.onAuthStateChanged((user) => {
-      if (!user) {
-        router.push('/');
-      } else {
-        setUser(user);
-      }
-    });
-    return () => unsubscribe();
-  }, [router]);
 
   const now = new Date();
   const [today, setToday] = useState(format(now, 'yyyy年MM年dd日(E)'));
@@ -83,7 +69,7 @@ const Dashboard: NextPage = () => {
         animationData
       });
     }
-  }, [LottieRef, user]);
+  }, [LottieRef, AuthState.currentUser]);
 
   // TODO: レスポンステストができたら消す
   type testRestType = {
@@ -122,10 +108,8 @@ const Dashboard: NextPage = () => {
     }
   };
 
-  if (!user) return <></>;
-
   return (
-    <>
+    <PrivateRoute>
       <Container pb="10">
         {/* TODO: レスポンステストができたら消す */}
         <Center textAlign="center">
@@ -208,7 +192,7 @@ const Dashboard: NextPage = () => {
           </ModalContent>
         </Modal>
       </Container>
-    </>
+    </PrivateRoute>
   );
 };
 export default Dashboard;
