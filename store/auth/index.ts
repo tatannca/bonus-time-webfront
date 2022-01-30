@@ -1,35 +1,68 @@
 import { createSlice, PayloadAction, createAsyncThunk, SerializedError } from '@reduxjs/toolkit';
-import { signInWithEmailAndPassword, User, Auth } from 'firebase/auth';
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword, User, Auth } from 'firebase/auth';
+import { firebaseAuth } from '../../firebase/config';
 
-export interface AuthState {
+interface AuthState {
   isLoading: boolean;
-  currentUser: null | User;
-  authError: null | SerializedError;
+  currentUser: User | null | undefined;
+  authError: SerializedError | null;
 }
 
 const initialState: AuthState = {
   isLoading: false,
-  currentUser: null,
+  currentUser: undefined,
   authError: null
 };
 
-type signInParams = {
+type CredentialParams = {
   firebaseAuth: Auth;
   email: string;
   password: string;
 };
 
-export const requestSignIn = createAsyncThunk('auth/requestSignIn', async (params: signInParams, thunkAPI) => {
+export const requestSignUp = createAsyncThunk('auth/requestSignUp', async (params: CredentialParams, thunkAPI) => {
+  const { firebaseAuth, email, password } = params;
+  try {
+    const res = await createUserWithEmailAndPassword(firebaseAuth, email, password);
+    const data = res.user;
+    await firebaseAuth.onIdTokenChanged(async (user) => {
+      if (user) {
+        const token = await user.getIdToken();
+        window.localStorage.setItem('access_token', token);
+      }
+    });
+    return { data };
+  } catch (err) {
+    return thunkAPI.rejectWithValue(err);
+  }
+});
+
+export const requestSignIn = createAsyncThunk('auth/requestSignIn', async (params: CredentialParams, thunkAPI) => {
   const { firebaseAuth, email, password } = params;
   try {
     const res = await signInWithEmailAndPassword(firebaseAuth, email, password);
     const data = res.user.toJSON() as User;
+    await firebaseAuth.onIdTokenChanged(async (user) => {
+      if (user) {
+        const token = await user.getIdToken();
+        window.localStorage.setItem('access_token', token);
+      }
+    });
     return { data };
   } catch (err: any) {
     if (err.code || err.message) {
       const { code, message } = err;
       return thunkAPI.rejectWithValue({ code, message });
     }
+    return thunkAPI.rejectWithValue(err);
+  }
+});
+
+export const requestSignOut = createAsyncThunk('auth/requestSignOut', async (_, thunkAPI) => {
+  try {
+    await firebaseAuth.signOut();
+    window.localStorage.removeItem('access_token');
+  } catch (err) {
     return thunkAPI.rejectWithValue(err);
   }
 });
@@ -50,14 +83,25 @@ export const authSlice = createSlice({
       state.isLoading = false;
       state.authError = action.payload;
     },
-    updateToken: (state, action: PayloadAction<{ user: User }>) => {
+    updateUser: (state, action: PayloadAction<{ user: User | null }>) => {
       state.currentUser = action.payload.user;
-    },
-    resetAuth: (state) => {
-      state.currentUser = null;
     }
   },
   extraReducers: (builder) => {
+    // signUp
+    builder.addCase(requestSignUp.pending, (state) => {
+      state.isLoading = true;
+    });
+    builder.addCase(requestSignUp.fulfilled, (state, action) => {
+      state.isLoading = false;
+      state.currentUser = action.payload.data;
+      state.authError = null;
+    });
+    builder.addCase(requestSignUp.rejected, (state, action) => {
+      state.isLoading = false;
+      state.authError = action.error;
+    });
+    // signIn
     builder.addCase(requestSignIn.pending, (state) => {
       state.isLoading = true;
     });
@@ -74,8 +118,20 @@ export const authSlice = createSlice({
         state.authError = action.error;
       }
     });
+    // signOut
+    builder.addCase(requestSignOut.pending, (state) => {
+      state.isLoading = true;
+    });
+    builder.addCase(requestSignOut.fulfilled, (state) => {
+      state.isLoading = false;
+      state.currentUser = null;
+    });
+    builder.addCase(requestSignOut.rejected, (state, action) => {
+      state.isLoading = false;
+      state.authError = action.error;
+    });
   }
 });
 
-export const { signUpAuthStart, signUpAuthSucceed, catchErrorAuth, resetAuth, updateToken } = authSlice.actions;
+export const { signUpAuthStart, signUpAuthSucceed, catchErrorAuth, updateUser } = authSlice.actions;
 export default authSlice.reducer;
