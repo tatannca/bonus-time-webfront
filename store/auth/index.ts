@@ -26,7 +26,7 @@ export const requestSignIn = createAsyncThunk('auth/requestSignIn', async (param
   try {
     const res = await signInWithEmailAndPassword(firebaseAuth, email, password);
     const data = res.user.toJSON() as User;
-    await firebaseAuth.onAuthStateChanged(async (user) => {
+    await firebaseAuth.onIdTokenChanged(async (user) => {
       if (user) {
         const token = await user.getIdToken();
         window.localStorage.setItem('access_token', token);
