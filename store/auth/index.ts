@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction, createAsyncThunk, SerializedError } from '@reduxjs/toolkit';
-import { signInWithEmailAndPassword, User, Auth } from 'firebase/auth';
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword, User, Auth } from 'firebase/auth';
 import { useRouter } from 'next/router';
 import { firebaseAuth } from '../../firebase/config';
 
@@ -15,13 +15,30 @@ const initialState: AuthState = {
   authError: null
 };
 
-type signInParams = {
+type CredentialParams = {
   firebaseAuth: Auth;
   email: string;
   password: string;
 };
 
-export const requestSignIn = createAsyncThunk('auth/requestSignIn', async (params: signInParams, thunkAPI) => {
+export const requestSignUp = createAsyncThunk('auth/requestSignUp', async (params: CredentialParams, thunkAPI) => {
+  const { firebaseAuth, email, password } = params;
+  try {
+    const res = await createUserWithEmailAndPassword(firebaseAuth, email, password);
+    const data = res.user;
+    await firebaseAuth.onIdTokenChanged(async (user) => {
+      if (user) {
+        const token = await user.getIdToken();
+        window.localStorage.setItem('access_token', token);
+      }
+    });
+    return { data };
+  } catch (err) {
+    return thunkAPI.rejectWithValue(err);
+  }
+});
+
+export const requestSignIn = createAsyncThunk('auth/requestSignIn', async (params: CredentialParams, thunkAPI) => {
   const { firebaseAuth, email, password } = params;
   try {
     const res = await signInWithEmailAndPassword(firebaseAuth, email, password);
@@ -41,6 +58,7 @@ export const requestSignIn = createAsyncThunk('auth/requestSignIn', async (param
     return thunkAPI.rejectWithValue(err);
   }
 });
+
 export const requestSignOut = createAsyncThunk('auth/requestSignOut', async (_, thunkAPI) => {
   try {
     await firebaseAuth.signOut();
@@ -71,6 +89,20 @@ export const authSlice = createSlice({
     }
   },
   extraReducers: (builder) => {
+    // signUp
+    builder.addCase(requestSignUp.pending, (state) => {
+      state.isLoading = true;
+    });
+    builder.addCase(requestSignUp.fulfilled, (state, action) => {
+      state.isLoading = false;
+      state.currentUser = action.payload.data;
+      state.authError = null;
+    });
+    builder.addCase(requestSignUp.rejected, (state, action) => {
+      state.isLoading = false;
+      state.authError = action.error;
+    });
+    // signIn
     builder.addCase(requestSignIn.pending, (state) => {
       state.isLoading = true;
     });
@@ -87,6 +119,7 @@ export const authSlice = createSlice({
         state.authError = action.error;
       }
     });
+    // signOut
     builder.addCase(requestSignOut.pending, (state) => {
       state.isLoading = true;
     });

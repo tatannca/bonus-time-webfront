@@ -1,13 +1,12 @@
 import type { NextPage } from 'next';
 import { useRouter } from 'next/router';
-import axios from 'axios';
 import { Container, VStack, Input, InputGroup, InputRightElement, Button, IconButton, Heading } from '@chakra-ui/react';
 import { ChevronLeftIcon } from '@chakra-ui/icons';
-import { createUserWithEmailAndPassword, User } from 'firebase/auth';
+import { User } from 'firebase/auth';
 import { firebaseAuth } from '../../firebase/config';
 import { useEffect, useState } from 'react';
-import { catchErrorAuth, signUpAuthStart, signUpAuthSucceed } from '../../store/auth';
-import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { catchErrorAuth, signUpAuthStart, signUpAuthSucceed, requestSignUp } from '../../store/auth';
+import { useAppDispatch } from '../../store/hooks';
 
 const SingUp: NextPage = () => {
   const dispatch = useAppDispatch();
@@ -16,23 +15,9 @@ const SingUp: NextPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPass, setShowPass] = useState(false);
-  const authState = useAppSelector((state) => state.auth);
 
   const signUp = () => {
-    dispatch(signUpAuthStart());
-    createUserWithEmailAndPassword(firebaseAuth, email, password)
-      .then((res) => {
-        const user = res.user;
-        dispatch(signUpAuthSucceed({ user }));
-      })
-      .catch((err) => {
-        if (err.code || err.message) {
-          const { code, message } = err;
-          dispatch(catchErrorAuth({ code, message }));
-        } else {
-          dispatch(catchErrorAuth(err));
-        }
-      });
+    dispatch(requestSignUp({ firebaseAuth, email, password }));
   };
 
   // TODO: hookに切り出す
@@ -47,21 +32,6 @@ const SingUp: NextPage = () => {
     });
     return () => unsubscribe();
   }, [router]);
-
-  // const apiTest = () => {
-  //   axios
-  //     .get('http://localhost:8080/api/v1/public')
-  //     .then((res) => {
-  //       console.log(res.data)
-  //     })
-  //     .catch((err) => {
-  //       console.log(err)
-  //     })
-  // }
-
-  // useEffect(() => {
-  //   if (user && !authState.isCreatedUser) router.replace('/dashboard');
-  // }, [user, authState.isCreatedUser, router]);
 
   if (user === undefined || user) return <></>;
 
