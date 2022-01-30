@@ -31,29 +31,15 @@ const SingUp: NextPage = () => {
     return () => unsubscribe();
   }, [router]);
 
-  const login = async () => {
-    await dispatch(requestSignIn({ firebaseAuth, email, password }));
-    firebaseAuth.onAuthStateChanged(async (user) => {
-      if (user) {
-        const token = await user.getIdToken();
-        localStorage.setItem('access_token', token);
+  const login = () => {
+    dispatch(requestSignIn({ firebaseAuth, email, password }))
+      .then(() => {
         router.replace('/dashboard');
-      } else {
-        setUser(user);
-      }
-    });
+      })
+      .catch(() => {
+        setUser(null);
+      });
   };
-
-  // const apiTest = () => {
-  //   axios
-  //     .get('http://localhost:8080/api/v1/public')
-  //     .then((res) => {
-  //       console.log(res.data)
-  //     })
-  //     .catch((err) => {
-  //       console.log(err)
-  //     })
-  // }
 
   if (user || user === undefined) return <></>;
 
