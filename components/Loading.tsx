@@ -1,7 +1,7 @@
-import type { NextPage } from 'next';
 import { VStack, Spinner, Text } from '@chakra-ui/react';
+import { FC } from 'react';
 
-export const Loading: NextPage = () => {
+export const Loading: FC = () => {
   return (
     <VStack pt={20}>
       <Spinner color="teal" size="xl" />

@@ -1,4 +1,3 @@
-import type { NextPage } from 'next';
 import {
   Box,
   Button,
@@ -15,7 +14,7 @@ import {
   Input
 } from '@chakra-ui/react';
 import { format } from 'date-fns';
-import { useState } from 'react';
+import { FC, useState } from 'react';
 
 type PickType<T, K extends keyof T> = T[K];
 type TimeStampButtonProps = {
@@ -23,7 +22,7 @@ type TimeStampButtonProps = {
   colorScheme?: PickType<ThemingProps, 'colorScheme'>;
 };
 
-export const TimeStampButton: NextPage<TimeStampButtonProps> = ({ text, colorScheme }) => {
+export const TimeStampButton: FC<TimeStampButtonProps> = ({ text, colorScheme }) => {
   const [timeStamp, setTimeStamp] = useState<string | null>(null);
   const [editedTimeStamp, setEditedTimeStamp] = useState<string | null>(null);
   // const [formatTime, setFormatTime] = useState<string | null>(null);
