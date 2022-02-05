@@ -1,6 +1,5 @@
 import type { NextPage } from 'next';
 import NextLink from 'next/link';
-import axios from 'axios';
 import {
   Container,
   Text,
@@ -76,43 +75,8 @@ const Dashboard: NextPage = () => {
   }, [LottieRef, AuthState.currentUser]);
 
   // TODO: レスポンステストができたら消す
-  type testRestType = {
-    message: string;
-  };
-  type ResponseError = {
-    response: {
-      data: {
-        message: {
-          ErrorCode: string;
-        };
-      };
-    };
-  };
-  // https://api-bonus-time.onrender.com
-  // http://localhost:5000/
   const dispatch = useDispatch();
-  const [testResPublic, setTestResPublic] = useState<testRestType>();
-  const [testResPrivate, setTestResPrivate] = useState<string>();
-  // const responseTestPublic = async () => {
-  //   const res = await axios.get(`https://api-bonus-time.onrender.com/public`);
-  //   const data: testRestType = res.data;
-  //   setTestResPublic(data);
-  // };
   const responseTestPublic = () => dispatch(getPublicMessage());
-  // const responseTestPrivate = async () => {
-  //   const token = window.localStorage.getItem('access_token');
-  //   try {
-  //     const res = await axios.get(`https://api-bonus-time.onrender.com/private`, {
-  //       headers: { Authorization: `Bearer ${token}` }
-  //     });
-  //     const data: testRestType = res.data;
-  //     setTestResPrivate(data.message);
-  //   } catch (err) {
-  //     const { response } = err as ResponseError;
-  //     const data = response.data.message.ErrorCode;
-  //     setTestResPrivate(data);
-  //   }
-  // };
   const responseTestPrivate = () => dispatch(getPrivateMessage());
 
   const { UtilsState } = useUtilsState();
@@ -125,12 +89,10 @@ const Dashboard: NextPage = () => {
           <Box pt={5}>
             <Button onClick={responseTestPublic}>Response TEST (Public)</Button>
             <Text pt={2} textAlign="center">
-              {/* {testResPublic?.message} */}
               {UtilsState?.publicMessage}
             </Text>
             <Button onClick={responseTestPrivate}>Response TEST (Private)</Button>
             <Text pt={2} textAlign="center">
-              {/* {testResPrivate} */}
               {UtilsState?.privateMessage}
             </Text>
           </Box>

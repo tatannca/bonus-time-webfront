@@ -3,7 +3,6 @@ import NextImage from 'next/image';
 import NextLink from 'next/link';
 import { Box, Button, Text, Link, Center } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
-import axios from 'axios';
 import { useDispatch } from 'react-redux';
 import { getPrivateMessage, getPublicMessage } from '../store/utils';
 import { useUtilsState } from '../store/hooks';
@@ -20,43 +19,8 @@ const Home: NextPage = () => {
   const { UtilsState } = useUtilsState();
 
   // TODO: レスポンステストができたら消す
-  type testRestType = {
-    message: string;
-  };
-  type ResponseError = {
-    response: {
-      data: {
-        message: {
-          ErrorCode: string;
-        };
-      };
-    };
-  };
-  // https://api-bonus-time.onrender.com
-  // http://localhost:5000/
   const dispatch = useDispatch();
-  const [testResPublic, setTestResPublic] = useState<testRestType>();
-  const [testResPrivate, setTestResPrivate] = useState<string>();
-  // const responseTestPublic = async () => {
-  //   const res = await axios.get(`https://api-bonus-time.onrender.com/public`);
-  //   const data: testRestType = res.data;
-  //   setTestResPublic(data);
-  // };
   const responseTestPublic = () => dispatch(getPublicMessage());
-  // const responseTestPrivate = async () => {
-  //   const token = window.localStorage.getItem('access_token');
-  //   try {
-  //     const res = await axios.get(`https://api-bonus-time.onrender.com/private`, {
-  //       headers: { Authorization: `Bearer ${token}` }
-  //     });
-  //     const data: testRestType = res.data;
-  //     setTestResPrivate(data.message);
-  //   } catch (err) {
-  //     const { response } = err as ResponseError;
-  //     const data = response.data.message.ErrorCode;
-  //     setTestResPrivate(data);
-  //   }
-  // };
   const responseTestPrivate = () => dispatch(getPrivateMessage());
 
   if (height === 0) return <></>;
