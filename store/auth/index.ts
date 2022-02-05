@@ -20,53 +20,6 @@ type CredentialParams = {
   password: string;
 };
 
-export const requestSignUp = createAsyncThunk('auth/requestSignUp', async (params: CredentialParams, thunkAPI) => {
-  const { firebaseAuth, email, password } = params;
-  try {
-    const res = await createUserWithEmailAndPassword(firebaseAuth, email, password);
-    const data = res.user;
-    await firebaseAuth.onIdTokenChanged(async (user) => {
-      if (user) {
-        const token = await user.getIdToken();
-        window.localStorage.setItem('access_token', token);
-      }
-    });
-    return { data };
-  } catch (err) {
-    return thunkAPI.rejectWithValue(err);
-  }
-});
-
-export const requestSignIn = createAsyncThunk('auth/requestSignIn', async (params: CredentialParams, thunkAPI) => {
-  const { firebaseAuth, email, password } = params;
-  try {
-    const res = await signInWithEmailAndPassword(firebaseAuth, email, password);
-    const data = res.user.toJSON() as User;
-    await firebaseAuth.onIdTokenChanged(async (user) => {
-      if (user) {
-        const token = await user.getIdToken();
-        window.localStorage.setItem('access_token', token);
-      }
-    });
-    return { data };
-  } catch (err: any) {
-    if (err.code || err.message) {
-      const { code, message } = err;
-      return thunkAPI.rejectWithValue({ code, message });
-    }
-    return thunkAPI.rejectWithValue(err);
-  }
-});
-
-export const requestSignOut = createAsyncThunk('auth/requestSignOut', async (_, thunkAPI) => {
-  try {
-    await firebaseAuth.signOut();
-    window.localStorage.removeItem('access_token');
-  } catch (err) {
-    return thunkAPI.rejectWithValue(err);
-  }
-});
-
 export const authSlice = createSlice({
   name: 'auth',
   initialState,
@@ -118,6 +71,53 @@ export const authSlice = createSlice({
       state.isLoading = false;
       state.authError = action.error;
     });
+  }
+});
+
+export const requestSignUp = createAsyncThunk('auth/requestSignUp', async (params: CredentialParams, thunkAPI) => {
+  const { firebaseAuth, email, password } = params;
+  try {
+    const res = await createUserWithEmailAndPassword(firebaseAuth, email, password);
+    const data = res.user;
+    await firebaseAuth.onIdTokenChanged(async (user) => {
+      if (user) {
+        const token = await user.getIdToken();
+        window.localStorage.setItem('access_token', token);
+      }
+    });
+    return { data };
+  } catch (err) {
+    return thunkAPI.rejectWithValue(err);
+  }
+});
+
+export const requestSignIn = createAsyncThunk('auth/requestSignIn', async (params: CredentialParams, thunkAPI) => {
+  const { firebaseAuth, email, password } = params;
+  try {
+    const res = await signInWithEmailAndPassword(firebaseAuth, email, password);
+    const data = res.user.toJSON() as User;
+    await firebaseAuth.onIdTokenChanged(async (user) => {
+      if (user) {
+        const token = await user.getIdToken();
+        window.localStorage.setItem('access_token', token);
+      }
+    });
+    return { data };
+  } catch (err: any) {
+    if (err.code || err.message) {
+      const { code, message } = err;
+      return thunkAPI.rejectWithValue({ code, message });
+    }
+    return thunkAPI.rejectWithValue(err);
+  }
+});
+
+export const requestSignOut = createAsyncThunk('auth/requestSignOut', async (_, thunkAPI) => {
+  try {
+    await firebaseAuth.signOut();
+    window.localStorage.removeItem('access_token');
+  } catch (err) {
+    return thunkAPI.rejectWithValue(err);
   }
 });
 
