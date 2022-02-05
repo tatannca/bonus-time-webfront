@@ -71,18 +71,6 @@ export const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    signUpAuthStart: (state) => {
-      state.isLoading = true;
-    },
-    signUpAuthSucceed: (state, action: PayloadAction<{ user: User }>) => {
-      state.isLoading = false;
-      state.currentUser = action.payload.user;
-      state.authError = null;
-    },
-    catchErrorAuth: (state, action) => {
-      state.isLoading = false;
-      state.authError = action.payload;
-    },
     updateUser: (state, action: PayloadAction<{ user: User | null }>) => {
       state.currentUser = action.payload.user;
     }
@@ -133,5 +121,5 @@ export const authSlice = createSlice({
   }
 });
 
-export const { signUpAuthStart, signUpAuthSucceed, catchErrorAuth, updateUser } = authSlice.actions;
+export const { updateUser } = authSlice.actions;
 export default authSlice.reducer;
