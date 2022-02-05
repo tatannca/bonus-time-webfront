@@ -129,7 +129,7 @@ const Dashboard: NextPage = () => {
 
         <Flex align="center" py={3}>
           <InfoIcon color="teal" />
-          <Text pl={2}>UserName</Text>
+          <Text pl={2}>{AuthState.currentUser ? AuthState.currentUser.email : 'Guest'}</Text>
           <Spacer />
           <NextLink href="/settings" passHref>
             <IconButton as="a" href="/" aria-label="設定" icon={<SettingsIcon />} />
