@@ -69,6 +69,8 @@ const Dashboard: NextPage = () => {
         animationData
       });
     }
+    // userのステートがないとページがレンダリングされずLottieRefが参照できないため、
+    // 依存配列にAuthState.currentUserを入れている
   }, [LottieRef, AuthState.currentUser]);
 
   // TODO: レスポンステストができたら消す
