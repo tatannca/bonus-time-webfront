@@ -12,14 +12,11 @@ export const PrivateRoute: FC = ({ children }) => {
 
   useEffect(() => {
     const unsubscribe = firebaseAuth.onAuthStateChanged((user) => {
-      if (!user) {
-        router.push('/');
-      } else {
-        dispatch(updateUser({ user }));
-      }
+      if (!user) router.push('/');
+      if (user && !AuthState.currentUser) dispatch(updateUser({ user }));
     });
     return () => unsubscribe();
-  }, [router, dispatch]);
+  }, [router, dispatch, AuthState.currentUser]);
 
   if (!AuthState.currentUser) return <></>;
 

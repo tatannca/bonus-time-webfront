@@ -1,6 +1,5 @@
 import type { NextPage } from 'next';
 import NextLink from 'next/link';
-import axios from 'axios';
 import {
   Container,
   Text,
@@ -30,7 +29,9 @@ import Lottie from 'lottie-web';
 import animationData from '../../public/57820-cute-monster.json';
 import { TimeStampButton } from '../../components/TimeStampButton';
 import { PrivateRoute } from '../../components/Auth';
-import { useAuthState } from '../../store/hooks';
+import { useAuthState, useUtilsState } from '../../store/hooks';
+import { useDispatch } from 'react-redux';
+import { getPrivateMessage, getPublicMessage } from '../../store/utils';
 
 const Dashboard: NextPage = () => {
   const [restTime, setRestTime] = useState('');
@@ -69,44 +70,16 @@ const Dashboard: NextPage = () => {
         animationData
       });
     }
+    // userのステートがないとページがレンダリングされずLottieRefが参照できないため、
+    // 依存配列にAuthState.currentUserを入れている
   }, [LottieRef, AuthState.currentUser]);
 
   // TODO: レスポンステストができたら消す
-  type testRestType = {
-    message: string;
-  };
-  type ResponseError = {
-    response: {
-      data: {
-        message: {
-          ErrorCode: string;
-        };
-      };
-    };
-  };
-  // https://api-bonus-time.onrender.com
-  // http://localhost:5000/
-  const [testResPublic, setTestResPublic] = useState<testRestType>();
-  const [testResPrivate, setTestResPrivate] = useState<string>();
-  const responseTestPublic = async () => {
-    const res = await axios.get(`https://api-bonus-time.onrender.com/public`);
-    const data: testRestType = res.data;
-    setTestResPublic(data);
-  };
-  const responseTestPrivate = async () => {
-    const token = window.localStorage.getItem('access_token');
-    try {
-      const res = await axios.get(`https://api-bonus-time.onrender.com/private`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      const data: testRestType = res.data;
-      setTestResPrivate(data.message);
-    } catch (err) {
-      const { response } = err as ResponseError;
-      const data = response.data.message.ErrorCode;
-      setTestResPrivate(data);
-    }
-  };
+  const dispatch = useDispatch();
+  const responseTestPublic = () => dispatch(getPublicMessage());
+  const responseTestPrivate = () => dispatch(getPrivateMessage());
+
+  const { UtilsState } = useUtilsState();
 
   return (
     <PrivateRoute>
@@ -116,18 +89,18 @@ const Dashboard: NextPage = () => {
           <Box pt={5}>
             <Button onClick={responseTestPublic}>Response TEST (Public)</Button>
             <Text pt={2} textAlign="center">
-              {testResPublic?.message}
+              {UtilsState?.publicMessage}
             </Text>
             <Button onClick={responseTestPrivate}>Response TEST (Private)</Button>
             <Text pt={2} textAlign="center">
-              {testResPrivate}
+              {UtilsState?.privateMessage}
             </Text>
           </Box>
         </Center>
 
         <Flex align="center" py={3}>
           <InfoIcon color="teal" />
-          <Text pl={2}>UserName</Text>
+          <Text pl={2}>{AuthState.currentUser ? AuthState.currentUser.email : 'Guest'}</Text>
           <Spacer />
           <NextLink href="/settings" passHref>
             <IconButton as="a" href="/" aria-label="設定" icon={<SettingsIcon />} />

@@ -20,69 +20,10 @@ type CredentialParams = {
   password: string;
 };
 
-export const requestSignUp = createAsyncThunk('auth/requestSignUp', async (params: CredentialParams, thunkAPI) => {
-  const { firebaseAuth, email, password } = params;
-  try {
-    const res = await createUserWithEmailAndPassword(firebaseAuth, email, password);
-    const data = res.user;
-    await firebaseAuth.onIdTokenChanged(async (user) => {
-      if (user) {
-        const token = await user.getIdToken();
-        window.localStorage.setItem('access_token', token);
-      }
-    });
-    return { data };
-  } catch (err) {
-    return thunkAPI.rejectWithValue(err);
-  }
-});
-
-export const requestSignIn = createAsyncThunk('auth/requestSignIn', async (params: CredentialParams, thunkAPI) => {
-  const { firebaseAuth, email, password } = params;
-  try {
-    const res = await signInWithEmailAndPassword(firebaseAuth, email, password);
-    const data = res.user.toJSON() as User;
-    await firebaseAuth.onIdTokenChanged(async (user) => {
-      if (user) {
-        const token = await user.getIdToken();
-        window.localStorage.setItem('access_token', token);
-      }
-    });
-    return { data };
-  } catch (err: any) {
-    if (err.code || err.message) {
-      const { code, message } = err;
-      return thunkAPI.rejectWithValue({ code, message });
-    }
-    return thunkAPI.rejectWithValue(err);
-  }
-});
-
-export const requestSignOut = createAsyncThunk('auth/requestSignOut', async (_, thunkAPI) => {
-  try {
-    await firebaseAuth.signOut();
-    window.localStorage.removeItem('access_token');
-  } catch (err) {
-    return thunkAPI.rejectWithValue(err);
-  }
-});
-
 export const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    signUpAuthStart: (state) => {
-      state.isLoading = true;
-    },
-    signUpAuthSucceed: (state, action: PayloadAction<{ user: User }>) => {
-      state.isLoading = false;
-      state.currentUser = action.payload.user;
-      state.authError = null;
-    },
-    catchErrorAuth: (state, action) => {
-      state.isLoading = false;
-      state.authError = action.payload;
-    },
     updateUser: (state, action: PayloadAction<{ user: User | null }>) => {
       state.currentUser = action.payload.user;
     }
@@ -133,5 +74,52 @@ export const authSlice = createSlice({
   }
 });
 
-export const { signUpAuthStart, signUpAuthSucceed, catchErrorAuth, updateUser } = authSlice.actions;
+export const requestSignUp = createAsyncThunk('auth/requestSignUp', async (params: CredentialParams, thunkAPI) => {
+  const { firebaseAuth, email, password } = params;
+  try {
+    const res = await createUserWithEmailAndPassword(firebaseAuth, email, password);
+    const data = res.user;
+    await firebaseAuth.onIdTokenChanged(async (user) => {
+      if (user) {
+        const token = await user.getIdToken();
+        window.localStorage.setItem('access_token', token);
+      }
+    });
+    return { data };
+  } catch (err) {
+    return thunkAPI.rejectWithValue(err);
+  }
+});
+
+export const requestSignIn = createAsyncThunk('auth/requestSignIn', async (params: CredentialParams, thunkAPI) => {
+  const { firebaseAuth, email, password } = params;
+  try {
+    const res = await signInWithEmailAndPassword(firebaseAuth, email, password);
+    const data = res.user.toJSON() as User;
+    await firebaseAuth.onIdTokenChanged(async (user) => {
+      if (user) {
+        const token = await user.getIdToken();
+        window.localStorage.setItem('access_token', token);
+      }
+    });
+    return { data };
+  } catch (err: any) {
+    if (err.code || err.message) {
+      const { code, message } = err;
+      return thunkAPI.rejectWithValue({ code, message });
+    }
+    return thunkAPI.rejectWithValue(err);
+  }
+});
+
+export const requestSignOut = createAsyncThunk('auth/requestSignOut', async (_, thunkAPI) => {
+  try {
+    await firebaseAuth.signOut();
+    window.localStorage.removeItem('access_token');
+  } catch (err) {
+    return thunkAPI.rejectWithValue(err);
+  }
+});
+
+export const { updateUser } = authSlice.actions;
 export default authSlice.reducer;

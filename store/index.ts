@@ -1,14 +1,16 @@
 import { configureStore } from '@reduxjs/toolkit';
 import authReducer from './auth';
+import utilsReducer from './utils';
 
 export const store = configureStore({
   reducer: {
-    auth: authReducer
+    auth: authReducer,
+    utils: utilsReducer
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
       serializableCheck: {
-        ignoredActions: ['auth/requestSignIn/pending', 'auth/requestSignIn/rejected']
+        ignoredActions: ['auth/requestSignIn/pending', 'auth/requestSignIn/rejected', 'auth/updateUser']
       }
     })
 });
