@@ -10,7 +10,7 @@ interface AuthState {
 
 const initialState: AuthState = {
   isLoading: false,
-  currentUser: undefined,
+  currentUser: null,
   authError: null
 };
 
@@ -69,7 +69,7 @@ export const authSlice = createSlice({
     });
     builder.addCase(requestSignOut.rejected, (state, action) => {
       state.isLoading = false;
-      state.authError = action.error;
+      state.authError = action.payload as SerializedError;
     });
   }
 });
@@ -78,7 +78,7 @@ export const requestSignUp = createAsyncThunk('auth/requestSignUp', async (param
   const { firebaseAuth, email, password } = params;
   try {
     const res = await createUserWithEmailAndPassword(firebaseAuth, email, password);
-    const data = res.user;
+    const data = res.user.toJSON() as User;
     await firebaseAuth.onIdTokenChanged(async (user) => {
       if (user) {
         const token = await user.getIdToken();

@@ -8,7 +8,7 @@ type UtilsState = {
   publicMessage: string | null;
   privateMessage: string | null;
   utilsError: {
-    message?: string;
+    message: string;
   } | null;
 };
 const initialState: UtilsState = {
@@ -33,7 +33,7 @@ export const utilsSlice = createSlice({
     });
     builder.addCase(getPublicMessage.rejected, (state, action) => {
       state.isLoading = false;
-      state.utilsError = action.error;
+      state.utilsError = action.payload as { message: string };
     });
     // private
     builder.addCase(getPrivateMessage.pending, (state) => {
@@ -45,7 +45,7 @@ export const utilsSlice = createSlice({
     });
     builder.addCase(getPrivateMessage.rejected, (state, action) => {
       state.isLoading = false;
-      state.utilsError = action.error;
+      state.utilsError = action.payload as { message: string };
     });
   }
 });
@@ -57,7 +57,7 @@ export const getPublicMessage = createAsyncThunk('utils/getPublicMessage', async
     return { data };
   } catch (err) {
     if (axios.isAxiosError(err)) {
-      return thunkAPI.rejectWithValue(err.message);
+      return thunkAPI.rejectWithValue({ message: err.message });
     }
     return thunkAPI.rejectWithValue(err);
   }
@@ -70,7 +70,7 @@ export const getPrivateMessage = createAsyncThunk('utils/getPrivateMessage', asy
     return { data };
   } catch (err) {
     if (axios.isAxiosError(err)) {
-      return thunkAPI.rejectWithValue(err.message);
+      return thunkAPI.rejectWithValue({ message: err.message });
     }
     return thunkAPI.rejectWithValue(err);
   }

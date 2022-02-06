@@ -1,5 +1,5 @@
 import axios, { AxiosResponse } from 'axios';
-import { defaultApiConfig, endpoints } from './api';
+import { defaultApiConfig } from './api';
 
 const mainAxios = () =>
   axios.create({
@@ -10,23 +10,23 @@ const mainAxios = () =>
 
 type methods = 'get' | 'post' | 'put' | 'delete';
 
-export const apiFactory = async <T>(method: methods, endpoint: string) => {
+export const apiFactory = async <T>(method: methods, endpoint: string, params?: object) => {
   switch (method) {
     case 'get': {
-      const data: AxiosResponse<T> = await mainAxios().get(endpoint);
-      return data;
+      const res: AxiosResponse<T> = await mainAxios().get(endpoint);
+      return res;
     }
     case 'post': {
-      const data: AxiosResponse<T> = await mainAxios().post(endpoint);
-      return data;
+      const res: AxiosResponse<T> = await mainAxios().post(endpoint, params);
+      return res;
     }
     case 'put': {
-      const data: AxiosResponse<T> = await mainAxios().put(endpoint);
-      return data;
+      const res: AxiosResponse<T> = await mainAxios().put(endpoint, params);
+      return res;
     }
     case 'delete': {
-      const data: AxiosResponse<T> = await mainAxios().delete(endpoint);
-      return data;
+      const res: AxiosResponse<T> = await mainAxios().delete(endpoint);
+      return res;
     }
   }
 };
