@@ -1,12 +1,42 @@
 import axios, { AxiosResponse } from 'axios';
+import { firebaseAuth } from '../firebase/config';
 import { defaultApiConfig } from './api';
 
-const mainAxios = () =>
-  axios.create({
+const mainAxios = () => {
+  const instance = axios.create({
     baseURL: defaultApiConfig.baseURL,
     headers: { Authorization: `Bearer ${window.localStorage.getItem('access_token')}` },
     timeout: defaultApiConfig.timeout
   });
+
+  instance.interceptors.response.use(
+    (res) => {
+      return res;
+    },
+    async (err) => {
+      if (err.response.status === 401 && firebaseAuth.currentUser) {
+        console.log(err.config);
+        const newToken = (await firebaseAuth.currentUser.getIdTokenResult()).token;
+        console.log(newToken);
+        window.localStorage.setItem('access_token', newToken);
+        console.log(err.config);
+        const res = await axios
+          .request({
+            ...err.config,
+            headers: {
+              Authorization: `Bearer ${window.localStorage.getItem('access_token')}`
+            }
+          })
+          .catch((err) => {
+            window.location.href = '/';
+          });
+        return res;
+      }
+    }
+  );
+
+  return instance;
+};
 
 type methods = 'get' | 'post' | 'put' | 'delete';
 

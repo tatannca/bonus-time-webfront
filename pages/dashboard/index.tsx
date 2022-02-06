@@ -89,12 +89,12 @@ const Dashboard: NextPage = () => {
           <Box pt={5}>
             <Button onClick={responseTestPublic}>Response TEST (Public)</Button>
             <Text pt={2} textAlign="center">
-              {UtilsState.publicMessage}
+              {UtilsState && UtilsState.publicMessage}
             </Text>
             <Button onClick={responseTestPrivate}>Response TEST (Private)</Button>
             <Text pt={2} textAlign="center">
-              {UtilsState.privateMessage}
-              {UtilsState.utilsError?.message}
+              {UtilsState && UtilsState.privateMessage}
+              {UtilsState && UtilsState.utilsError?.err}
             </Text>
           </Box>
         </Center>
