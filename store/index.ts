@@ -9,9 +9,11 @@ export const store = configureStore({
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
-      serializableCheck: {
-        ignoredActions: ['auth/requestSignIn/pending', 'auth/requestSignIn/rejected', 'auth/updateUser']
-      }
+      // TODO: あとで直したほうが良いかも
+      serializableCheck: false
+      // serializableCheck: {
+      //   ignoredActions: ['auth/requestSignIn/pending', 'auth/requestSignIn/rejected', 'auth/updateUser']
+      // }
     })
 });
 
