@@ -81,8 +81,8 @@ export const requestSignUp = createAsyncThunk('auth/requestSignUp', async (param
     const data = res.user.toJSON() as User;
     await firebaseAuth.onIdTokenChanged(async (user) => {
       if (user) {
-        const token = await user.getIdToken();
-        window.localStorage.setItem('access_token', token);
+        const accessToken = await user.getIdToken();
+        window.localStorage.setItem('access_token', accessToken);
       }
     });
     return { data };
@@ -98,8 +98,8 @@ export const requestSignIn = createAsyncThunk('auth/requestSignIn', async (param
     const data = res.user.toJSON() as User;
     await firebaseAuth.onIdTokenChanged(async (user) => {
       if (user) {
-        const token = await user.getIdToken();
-        window.localStorage.setItem('access_token', token);
+        const accessToken = await user.getIdToken();
+        window.localStorage.setItem('access_token', accessToken);
       }
     });
     return { data };

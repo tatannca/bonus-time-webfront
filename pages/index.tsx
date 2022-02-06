@@ -53,7 +53,7 @@ const Home: NextPage = () => {
             <Button onClick={responseTestPrivate}>Response TEST (Private)</Button>
             <Text pt={2} textAlign="center">
               {UtilsState.privateMessage}
-              {UtilsState.utilsError?.message}
+              {UtilsState.utilsError?.err}
             </Text>
           </Box>
         </Center>
