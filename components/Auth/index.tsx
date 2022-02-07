@@ -31,6 +31,7 @@ export const OnlyPublicRoute: FC = ({ children }) => {
   useEffect(() => {
     const unsubscribe = firebaseAuth.onAuthStateChanged((user) => {
       if (user) {
+        dispatch(updateUser({ user }));
         router.replace('/dashboard');
       } else {
         dispatch(updateUser({ user: null }));
