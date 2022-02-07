@@ -15,11 +15,8 @@ const mainAxios = () => {
     },
     async (err) => {
       if (err.response.status === 401 && firebaseAuth.currentUser) {
-        console.log(err.config);
         const newToken = (await firebaseAuth.currentUser.getIdTokenResult()).token;
-        console.log(newToken);
         window.localStorage.setItem('access_token', newToken);
-        console.log(err.config);
         const res = await axios
           .request({
             ...err.config,
