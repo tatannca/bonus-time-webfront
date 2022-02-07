@@ -59,7 +59,7 @@ export const getPublicMessage = createAsyncThunk('utils/getPublicMessage', async
     if (axios.isAxiosError(err)) {
       return thunkAPI.rejectWithValue({ err: err.message });
     }
-    return thunkAPI.rejectWithValue({ err });
+    return thunkAPI.rejectWithValue({ err: '取得できませんでした' });
   }
 });
 
@@ -70,9 +70,9 @@ export const getPrivateMessage = createAsyncThunk('utils/getPrivateMessage', asy
     return { data };
   } catch (err) {
     if (axios.isAxiosError(err)) {
-      return thunkAPI.rejectWithValue({ err: err.response?.data });
+      return thunkAPI.rejectWithValue({ err: err.message });
     }
-    return thunkAPI.rejectWithValue({ err });
+    return thunkAPI.rejectWithValue({ err: '取得できませんでした' });
   }
 });
 
